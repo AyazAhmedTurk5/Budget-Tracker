@@ -1,34 +1,29 @@
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Typography, Box } from "@mui/material";
-import signUpImage from "../../assets/signup_illustration.svg";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+} from "@mui/material";
+import loginImage from "../../assets/loginImage.svg";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import logo from "../../assets/BudgetTracker.svg";
 
 interface FormData {
-  firstName: string;
-  lastName: string;
   email: string;
   password: string;
-  confirmPassword: string;
-  budget: number;
+  rememberMe?: boolean;
 }
+
 const validationSchema = yup.object().shape({
-  firstName: yup
-    .string()
-    .matches(
-      /^[A-Za-z\s-]+$/,
-      "Only alphabets, spaces, and hyphens are allowed"
-    )
-    .max(50, "First Name cannot exceed 50 characters")
-    .required("First Name is required"),
-  lastName: yup
-    .string()
-    .matches(
-      /^[A-Za-z\s-]+$/,
-      "Only alphabets, spaces, and hyphens are allowed"
-    )
-    .max(50, "Last Name cannot exceed 50 characters")
-    .required("Last Name is required"),
   email: yup
     .string()
     .email("Invalid email format")
@@ -36,21 +31,8 @@ const validationSchema = yup.object().shape({
   password: yup
     .string()
     .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      "Password must include alphabets, numbers, and special characters"
-    )
     .required("Password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password"), undefined], "Passwords must match")
-    .required("Confirm Password is required"),
-  budget: yup
-    .number()
-    .typeError("Budget must be a number")
-    .min(1, "Budget must be at least 1")
-    .max(99999999, "Budget cannot exceed 99999999")
-    .required("Budget is required"),
+  rememberMe: yup.boolean(),
 });
 
 const Login = () => {
@@ -58,24 +40,31 @@ const Login = () => {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm({
+  } = useForm<FormData>({
     resolver: yupResolver(validationSchema),
   });
+
+  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev); // Toggle password visibility
+  };
 
   const onSubmit = (data: FormData) => {
     console.log("Form Data: ", data);
   };
 
   return (
-    <>
+    <div className="layout">
+      {/* Logo */}
+      <img src={logo} alt="Logo" style={{ width: "300px", height: "50px" }} />
+
       <Box
         sx={{
           display: "flex",
           flexDirection: { xs: "column", md: "row" },
           justifyContent: "center",
           alignItems: "center",
-          minHeight: "100vh",
-          padding: "2rem",
           backgroundColor: "white",
         }}
       >
@@ -83,57 +72,34 @@ const Login = () => {
         <Box
           sx={{
             width: { xs: "100%", md: "50%" },
-            padding: "2rem",
             backgroundColor: "#fff",
             borderRadius: "12px",
+            pr: { md: "20px" },
           }}
         >
           <Typography
-            variant="h4"
             sx={{
               fontWeight: "bold",
-              mb: 2,
+              fontSize: "32px",
+              mt: 3,
               textAlign: "start",
             }}
           >
-            Sign Up
+            Welcome Back!
           </Typography>
-          <Typography variant="subtitle1" sx={{ mb: 3, textAlign: "start" }}>
-            Welcome to our community
+          <Typography
+            sx={{
+              mb: 3,
+              textAlign: "start",
+              color: "#878A99",
+              fontSize: "18px",
+              letterSpacing: "0.25px",
+            }}
+          >
+            Sign in to continue to Budget Tracker
           </Typography>
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* First Name and Last Name */}
-            <Box sx={{ display: "flex", gap: "1rem", mb: 2 }}>
-              <Controller
-                name="firstName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="First Name"
-                    fullWidth
-                    variant="outlined"
-                    error={!!errors.firstName}
-                    helperText={errors.firstName?.message}
-                  />
-                )}
-              />
-              <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Last Name"
-                    fullWidth
-                    variant="outlined"
-                    error={!!errors.lastName}
-                    helperText={errors.lastName?.message}
-                  />
-                )}
-              />
-            </Box>
 
+          <form onSubmit={handleSubmit(onSubmit)}>
             {/* Email */}
             <Controller
               name="email"
@@ -147,7 +113,14 @@ const Login = () => {
                   type="email"
                   error={!!errors.email}
                   helperText={errors.email?.message}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton aria-label="message icon" edge="end">
+                        <MailOutlineIcon />
+                      </IconButton>
+                    ),
+                  }}
                 />
               )}
             />
@@ -159,49 +132,64 @@ const Login = () => {
               render={({ field }) => (
                 <TextField
                   {...field}
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword?.message}
-                  variant="outlined"
-                  type="password"
-                  sx={{ mb: 2 }}
-                />
-              )}
-            />
-            {/* Confirm Password */}
-            <Controller
-              name="confirmPassword"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Confirm Password"
+                  label="Password"
                   fullWidth
                   variant="outlined"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   error={!!errors.password}
                   helperText={errors.password?.message}
-                  sx={{ mb: 2 }}
+                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
+                  InputProps={{
+                    endAdornment: (
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        edge="end"
+                      >
+                        {showPassword ? (
+                          <VisibilityOffIcon />
+                        ) : (
+                          <VisibilityIcon />
+                        )}
+                      </IconButton>
+                    ),
+                  }}
                 />
               )}
             />
 
-            {/* Budget */}
-            <Controller
-              name="budget"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Budget Limit"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.budget}
-                  helperText={errors.budget?.message}
-                  sx={{ mb: 3 }}
-                />
-              )}
-            />
+            {/* Remember Me */}
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                mb: 2,
+              }}
+            >
+              <Controller
+                name="rememberMe"
+                control={control}
+                defaultValue={false}
+                render={({ field }) => (
+                  <FormControlLabel
+                    control={<Checkbox {...field} />}
+                    label="Remember me"
+                  />
+                )}
+              />
+              <Typography
+                sx={{
+                  fontSize: "14px",
+                  color: "#6C63FF",
+                  cursor: "pointer",
+                }}
+              >
+                Forgot Password?
+              </Typography>
+            </Box>
 
+            {/* Submit Button */}
             <Button
               type="submit"
               variant="contained"
@@ -213,16 +201,17 @@ const Login = () => {
                 "&:hover": { backgroundColor: "#5a54d2" },
               }}
             >
-              Sign Up
+              Log In
             </Button>
           </form>
+
           <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
-            Already have an account?{" "}
+            Don’t have an account?{" "}
             <Button
               variant="text"
               sx={{ textTransform: "none", color: "#6C63FF" }}
             >
-              Log in
+              Sign Up
             </Button>
           </Typography>
         </Box>
@@ -238,13 +227,13 @@ const Login = () => {
           }}
         >
           <img
-            src={signUpImage}
-            alt="Sign Up Illustration"
+            src={loginImage}
+            alt="Login Illustration"
             style={{ maxWidth: "80%", height: "auto" }}
           />
         </Box>
       </Box>
-    </>
+    </div>
   );
 };
 
