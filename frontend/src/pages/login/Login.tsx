@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -16,6 +15,8 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import logo from "../../assets/BudgetTracker.svg";
+import { Link } from "react-router-dom";
+import { useState } from "react";
 
 interface FormData {
   email: string;
@@ -44,10 +45,10 @@ const Login = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const [showPassword, setShowPassword] = useState(false); // State to toggle password visibility
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
-    setShowPassword((prev) => !prev); // Toggle password visibility
+    setShowPassword((prev) => !prev);
   };
 
   const onSubmit = (data: FormData) => {
@@ -207,12 +208,14 @@ const Login = () => {
 
           <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
             Don’t have an account?{" "}
-            <Button
-              variant="text"
-              sx={{ textTransform: "none", color: "#6C63FF" }}
-            >
-              Sign Up
-            </Button>
+            <Link to="/signup" style={{ textDecoration: "none" }}>
+              <Button
+                variant="text"
+                sx={{ textTransform: "none", color: "#6C63FF" }}
+              >
+                Sign Up
+              </Button>
+            </Link>
           </Typography>
         </Box>
 

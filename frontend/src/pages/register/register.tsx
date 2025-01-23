@@ -1,7 +1,7 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Typography, Box } from "@mui/material";
+import { TextField, Button, Typography, Box, Link } from "@mui/material";
 import signUpImage from "../../assets/signup_illustration.svg";
 import logo from "../../assets/BudgetTracker.svg";
 
@@ -232,12 +232,14 @@ const Register = () => {
           </form>
           <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
             Already have an account?{" "}
-            <Button
-              variant="text"
-              sx={{ textTransform: "none", color: "#6C63FF" }}
-            >
-              Log in
-            </Button>
+            <Link href="/login" sx={{ color: "#6C63FF" }}>
+              <Button
+                variant="text"
+                sx={{ textTransform: "none", color: "#6C63FF" }}
+              >
+                Log in
+              </Button>
+            </Link>
           </Typography>
         </Box>
         {/* Illustration Section */}
