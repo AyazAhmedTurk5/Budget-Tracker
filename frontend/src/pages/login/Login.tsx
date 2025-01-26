@@ -15,8 +15,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import logo from "../../assets/BudgetTracker.svg";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
+import api from "../../api/api";
 
 interface FormData {
   email: string;
@@ -46,13 +47,24 @@ const Login = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form Data: ", data);
+  const onSubmit = async (data: FormData) => {
+    try {
+      const response = await api.post("/api/login", {
+        email: data.email,
+        password: data.password,
+      });
+      const { token } = response.data;
+      localStorage.setItem("token", token);
+      navigate("/home");
+    } catch (error) {
+      console.error("Login failed:", error);
+    }
   };
 
   return (

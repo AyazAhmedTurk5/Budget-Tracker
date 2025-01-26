@@ -11,4 +11,20 @@ const dataSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model("Data", dataSchema);
+const userSchema = new mongoose.Schema({
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  // ...other fields...
+});
+
+module.exports = {
+  Data: mongoose.model("Data", dataSchema),
+  User: mongoose.model("User", userSchema),
+};
