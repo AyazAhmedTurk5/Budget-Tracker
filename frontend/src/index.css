@@ -6,8 +6,35 @@
   font-family: Poppins, Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
+  box-sizing: border-box;
 }
 
 .layout {
   padding: 2rem;
+}
+
+.heading {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.filters-container {
+  display: grid;
+  grid-template-columns: 1.5fr 2fr;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+}
+.filters-container-date {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr;
+  border-radius: 8px;
+  border: 1px solid #e3e3e3;
+}
+
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
 }
