@@ -2,11 +2,15 @@ import { AppBar, Toolbar, IconButton, Avatar, Box } from "@mui/material";
 import menuIcon from "../../assets/Hamburger.svg";
 import bellIcon from "../../assets/bellIcon.svg";
 
-const Header = () => {
+interface HeaderProps {
+  onMenuClick?: () => void;
+}
+
+const Header = (props: HeaderProps) => {
   return (
     <AppBar position="static" color="transparent" elevation={0}>
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <IconButton edge="start" color="inherit">
+        <IconButton onClick={props.onMenuClick} edge="start" color="inherit">
           <img src={menuIcon} alt="Logo" />
         </IconButton>
 
