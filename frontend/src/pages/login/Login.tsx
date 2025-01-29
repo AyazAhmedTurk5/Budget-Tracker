@@ -18,7 +18,9 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import logo from "../../assets/BudgetTracker.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import api from "../../api/api";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "../../store/root-reducer";
+import { updateUser } from "../../store/user/user.slice";
 
 interface FormData {
   email: string;
@@ -48,23 +50,23 @@ const Login = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const users = useSelector((state: RootState) => state.user.user);
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
 
   const onSubmit = async (data: FormData) => {
-    try {
-      const response = await api.post("/api/login", {
-        email: data.email,
-        password: data.password,
-      });
-      const { token } = response.data;
-      localStorage.setItem("token", token);
-      navigate("/home");
-    } catch (error) {
-      console.error("Login failed:", error);
+    const user = users.find(
+      (user) => user.email === data.email && user.password === data.password
+    );
+    if (user) {
+      dispatch(updateUser({ userId: user.userId, isLoggedIn: true }));
+      navigate("/");
+    } else {
+      alert("Invalid email or password");
     }
   };
 

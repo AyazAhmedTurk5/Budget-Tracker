@@ -18,9 +18,9 @@ export interface User {
   profilePicture: string;
   zipCode: string;
   isLoggedIn: boolean;
+  jobTitile: string;
 }
 
-export interface UsersState {
-  users: User[];
-  isLoggedIn: boolean;
+export interface UserState {
+  user: User[];
 }

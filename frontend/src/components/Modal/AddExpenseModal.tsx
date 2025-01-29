@@ -84,14 +84,12 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
     >
       <Box className="flex justify-between items-center pr-8">
         <DialogTitle>{modalType}</DialogTitle>
-        {modalType === "Delete Expense" && (
-          <img
-            src={CloseIcon}
-            alt="close"
-            onClick={handleClose}
-            className="cursor-pointer hover:opacity-70 hover:bg-gray-100 "
-          />
-        )}
+        <img
+          src={CloseIcon}
+          alt="close"
+          onClick={handleClose}
+          className="cursor-pointer hover:opacity-70 hover:bg-gray-100 "
+        />
       </Box>
 
       <DialogContent>
