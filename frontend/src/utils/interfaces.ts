@@ -4,22 +4,23 @@ export interface User {
   middleName: string;
   lastName: string;
   aboutMe: string;
-  gender: string;
   email: string;
   password: string;
-  website: string;
+  gender: string;
+  dateOfBirth: string;
   phoneNumber: string;
   education: string;
-  streetAddress: string;
   city: string;
+  website: string;
   state: string;
-  zipCode: string;
-  dateOfBirth: string;
+  streetAddress: string;
   budgetLimit: number;
   profilePicture: string;
+  zipCode: string;
   isLoggedIn: boolean;
 }
 
 export interface UsersState {
   users: User[];
+  isLoggedIn: boolean;
 }

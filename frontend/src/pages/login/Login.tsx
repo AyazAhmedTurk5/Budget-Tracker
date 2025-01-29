@@ -9,6 +9,7 @@ import {
   Checkbox,
   FormControlLabel,
   IconButton,
+  Divider,
 } from "@mui/material";
 import loginImage from "../../assets/loginImage.svg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -87,7 +88,7 @@ const Login = () => {
             width: { xs: "100%", md: "50%" },
             backgroundColor: "#fff",
             borderRadius: "12px",
-            pr: { md: "20px" },
+            pr: { md: "40px" },
           }}
         >
           <Typography
@@ -231,6 +232,8 @@ const Login = () => {
           </Typography>
         </Box>
 
+        <Divider orientation="vertical" variant="middle" flexItem />
+
         {/* Illustration Section */}
         <Box
           sx={{
@@ -239,6 +242,7 @@ const Login = () => {
             justifyContent: "center",
             width: "50%",
             height: "100%",
+            paddingRight: "5px",
           }}
         >
           <img

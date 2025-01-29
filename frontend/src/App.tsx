@@ -5,6 +5,8 @@ import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
 import Header from "./pages/header/Header";
 import Expenses from "./pages/expenses/Expenses";
+import { useSelector } from "react-redux";
+import { RootState } from "./store/root-reducer";
 
 const theme = createTheme({
   typography: {
@@ -13,6 +15,7 @@ const theme = createTheme({
 });
 
 const App = () => {
+  const isLoggedIn = useSelector((state: RootState) => state.user.isLoggedIn);
   return (
     <ThemeProvider theme={theme}>
       <Header />

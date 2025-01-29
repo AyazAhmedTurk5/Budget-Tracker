@@ -1,7 +1,14 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { TextField, Button, Typography, Box, Link } from "@mui/material";
+import {
+  TextField,
+  Button,
+  Typography,
+  Box,
+  Link,
+  Divider,
+} from "@mui/material";
 import signUpImage from "../../assets/signup_illustration.svg";
 import logo from "../../assets/BudgetTracker.svg";
 
@@ -86,7 +93,7 @@ const Register = () => {
             width: { xs: "100%", md: "50%" },
             backgroundColor: "#fff",
             borderRadius: "12px",
-            pr: { md: "20px" },
+            pr: { md: "40px" },
           }}
         >
           <Typography
@@ -242,6 +249,7 @@ const Register = () => {
             </Link>
           </Typography>
         </Box>
+        <Divider orientation="vertical" variant="middle" flexItem />
         {/* Illustration Section */}
         <Box
           sx={{

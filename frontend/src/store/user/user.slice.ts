@@ -4,6 +4,7 @@ import { userDemo } from "../demoData/userDemo.ts";
 
 const initialState: UsersState = {
   users: [...userDemo],
+  isLoggedIn: false,
 };
 
 const userSlice = createSlice({
