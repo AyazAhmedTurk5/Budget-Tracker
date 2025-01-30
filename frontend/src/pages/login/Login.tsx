@@ -11,11 +11,11 @@ import {
   IconButton,
   Divider,
 } from "@mui/material";
-import loginImage from "../../assets/loginImage.svg";
+import loginImage from "../../assets/images/loginImage.svg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import logo from "../../assets/BudgetTracker.svg";
+import logo from "../../assets/images/BudgetTracker.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";

@@ -9,7 +9,7 @@ import {
   Typography,
   Box,
 } from "@mui/material";
-import CloseIcon from "../../assets/Close-icon.svg";
+import CloseIcon from "../../assets/icons/Close-icon.svg";
 
 interface AddExpenseModalProps {
   open: boolean;

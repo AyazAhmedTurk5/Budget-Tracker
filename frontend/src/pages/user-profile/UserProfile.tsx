@@ -1,8 +1,8 @@
-import LocationIcon from "../../assets/location-icon.svg";
-import PhoneIcon from "../../assets/phone-icon.svg";
-import websiteIcon from "../../assets/webiste-icon.svg";
-import MailOutlineIcon from "../../assets/mail-icon.svg";
-import backArrow from "../../assets/back-arrow.svg";
+import LocationIcon from "../../assets/icons/location-icon.svg";
+import PhoneIcon from "../../assets/icons/phone-icon.svg";
+import websiteIcon from "../../assets/icons/webiste-icon.svg";
+import MailOutlineIcon from "../../assets/icons/mail-icon.svg";
+import backArrow from "../../assets/icons/back-arrow.svg";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";

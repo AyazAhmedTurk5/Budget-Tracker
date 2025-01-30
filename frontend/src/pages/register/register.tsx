@@ -9,8 +9,8 @@ import {
   Link,
   Divider,
 } from "@mui/material";
-import signUpImage from "../../assets/signup_illustration.svg";
-import logo from "../../assets/BudgetTracker.svg";
+import signUpImage from "../../assets/images/signup_illustration.svg";
+import logo from "../../assets/images/BudgetTracker.svg";
 
 interface FormData {
   firstName: string;

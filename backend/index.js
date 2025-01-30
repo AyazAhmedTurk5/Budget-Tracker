@@ -17,7 +17,7 @@ app.use(
 app.use(express.json());
 
 // Define your routes
-app.use("/api", routes);
+app.use("/budgets", routes);
 
 // Connect to MongoDB
 mongoose.connect(mongoString);

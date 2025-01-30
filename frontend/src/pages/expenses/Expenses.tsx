@@ -1,6 +1,6 @@
 import { useState } from "react";
-import DeleteIcon from "../../assets/delete-icon.svg";
-import EditIcon from "../../assets/edit-icon.svg";
+import DeleteIcon from "../../assets/icons/delete-icon.svg";
+import EditIcon from "../../assets/icons/edit-icon.svg";
 import { FaSearch } from "react-icons/fa";
 import AddExpenseModal from "../../components/Modal/AddExpenseModal";
 

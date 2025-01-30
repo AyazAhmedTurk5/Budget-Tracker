@@ -2,13 +2,13 @@ const express = require("express");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const router = express.Router();
-const { User } = require("../models/model");
+const { User, Budget } = require("../models/model");
 
 module.exports = router;
 
 //Post Method
 router.post("/post", async (req, res) => {
-  const data = new Model({
+  const data = new Budget({
     name: req.body.name,
     age: req.body.age,
   });
@@ -33,7 +33,8 @@ router.get("/getAll", async (req, res) => {
 //Get by ID Method
 router.get("/getOne/:id", async (req, res) => {
   try {
-    const data = await Model.findById(req.params.id);
+    const data = await Budget.findById(req.params.id);
+    console.log("Get One request received");
     res.json(data);
   } catch (error) {
     res.status(500).json({ message: error.message });

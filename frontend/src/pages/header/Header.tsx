@@ -1,6 +1,6 @@
 import { AppBar, Toolbar, IconButton, Avatar, Box } from "@mui/material";
-import menuIcon from "../../assets/Hamburger.svg";
-import bellIcon from "../../assets/bellIcon.svg";
+import menuIcon from "../../assets/icons/Hamburger.svg";
+import bellIcon from "../../assets/icons/bellIcon.svg";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
