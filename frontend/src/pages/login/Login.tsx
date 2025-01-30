@@ -18,9 +18,8 @@ import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import logo from "../../assets/images/BudgetTracker.svg";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "../../store/root-reducer";
-import { updateUser } from "../../store/user/user.slice";
+import { useDispatch } from "react-redux";
+import { setLoggedIn, setUser } from "../../store/user/user.slice";
 import { LoginFormData } from "../../utils/interfaces";
 import { LoginFormValidationSchema } from "../../utils/validation";
 
@@ -36,21 +35,41 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const users = useSelector((state: RootState) => state.user.user);
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
 
   const onSubmit = async (data: LoginFormData) => {
-    const user = users.find(
-      (user) => user.email === data.email && user.password === data.password
-    );
-    if (user) {
-      dispatch(updateUser({ userId: user.userId, isLoggedIn: true }));
+    try {
+      const response = await fetch("http://localhost:3000/budgets/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error("Invalid email or password");
+      }
+
+      const result = await response.json();
+
+      // Assuming the response contains a userId and a token
+      dispatch(setUser(result.user)); // Set user state
+      dispatch(setLoggedIn(true)); // Set login state
+
+      // Store token in localStorage (if needed)
+      localStorage.setItem("token", result.token);
+
       navigate("/");
-    } else {
-      alert("Invalid email or password");
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
     }
   };
 

@@ -9,6 +9,10 @@ const budgetSchema = new mongoose.Schema({
     required: true,
     type: Number,
   },
+  limit: {
+    required: true,
+    type: Number, // The budget limit for each category
+  },
 });
 
 const userSchema = new mongoose.Schema({
@@ -21,10 +25,23 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // ...other fields...
+  // Additional fields
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  budget: {
+    type: Number,
+    required: true,
+  },
+  // budgets: [budgetSchema], // Embedding an array of budget categories
 });
 
 module.exports = {
-  Budget: mongoose.model("Budget", budgetSchema),
+  Budget: mongoose.model("Budget", budgetSchema), // This can still be used for budget-specific actions if needed
   User: mongoose.model("User", userSchema),
 };

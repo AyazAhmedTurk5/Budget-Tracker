@@ -22,5 +22,7 @@ export const userDemo: Array<User> = [
     budgetLimit: 100000,
     profilePicture: "",
     isLoggedIn: false,
+    jobTitle: "",
+    fatherName: "",
   },
 ];

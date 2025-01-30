@@ -7,7 +7,7 @@ import { RootState } from "../../store/root-reducer";
 import { setToggleDrawer } from "../../store/user/user.slice";
 
 const Header = () => {
-  const users = useSelector((state: RootState) => state.user.user);
+  const user = useSelector((state: RootState) => state.user.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   return (
@@ -33,7 +33,7 @@ const Header = () => {
             onClick={() => {
               navigate("/profile");
             }}
-            src={users[0].profilePicture || "https://via.placeholder.com/100"}
+            src={user?.profilePicture || "https://via.placeholder.com/100"}
             alt="User Avatar"
           />
         </Box>

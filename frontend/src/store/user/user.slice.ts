@@ -3,56 +3,24 @@ import { User, UserState } from "../../utils/interfaces";
 
 const initialState: UserState = {
   isDrawerOpen: false,
-  user: [
-    {
-      userId: 1,
-      firstName: "Jane",
-      middleName: "B.",
-      lastName: "Smith",
-      aboutMe:
-        "An experienced UI/UX designer with a love for minimalistic design.",
-      email: "janesmith@example.com",
-      password: "StrongPass456!",
-      gender: "Female",
-      dateOfBirth: "1992-08-25",
-      phoneNumber: "+1 987-654-3210",
-      education: "Master's in Graphic Design",
-      city: "New York",
-      website: "https://janesmith.design",
-      state: "New York",
-      streetAddress: "456 Broadway Ave",
-      jobTitle: "UI/UX Designer",
-      budgetLimit: 7000,
-      profilePicture: "https://example.com/profile2.jpg",
-      zipCode: "10001",
-      isLoggedIn: false,
-    },
-  ],
+  user: null,
+  isLoggedIn: false,
 };
 
 const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user.push(action.payload);
+    setUser: (state, action: PayloadAction<User | null>) => {
+      state.user = action.payload;
     },
-    updateUser: (
-      state,
-      action: PayloadAction<Partial<User> & { userId: number }>
-    ) => {
-      if (action.payload.userId === 0) {
-        state.user.forEach((user) => {
-          user.isLoggedIn = false;
-        });
-      } else {
-        const index = state.user.findIndex(
-          (user) => user.userId === action.payload.userId
-        );
-        if (index !== -1) {
-          state.user[index] = { ...state.user[index], ...action.payload };
-        }
+    updateUser: (state, action: PayloadAction<Partial<User>>) => {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
       }
+    },
+    setLoggedIn: (state, action: PayloadAction<boolean>) => {
+      state.isLoggedIn = action.payload; // Set login state
     },
     setToggleDrawer: (state) => {
       state.isDrawerOpen = !state.isDrawerOpen;
@@ -60,5 +28,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUser, updateUser, setToggleDrawer } = userSlice.actions;
+export const { setUser, updateUser, setToggleDrawer, setLoggedIn } =
+  userSlice.actions;
 export default userSlice.reducer;

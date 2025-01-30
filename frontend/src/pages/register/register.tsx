@@ -18,9 +18,14 @@ import { RegistFormValidationSchema } from "../../utils/validation";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import { RegisterFormData } from "../../utils/interfaces";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUser } from "../../store/user/user.slice";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     handleSubmit,
@@ -30,8 +35,41 @@ const Register = () => {
     resolver: yupResolver(RegistFormValidationSchema),
   });
 
-  const onSubmit = (data: RegisterFormData) => {
+  const onSubmit = async (data: RegisterFormData) => {
     console.log("Form Data: ", data);
+
+    const { firstName, lastName, email, password, budget } = data;
+
+    try {
+      const response = await fetch("http://localhost:3000/budgets/signup", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+          budget,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        alert("Signup failed: " + errorData.message);
+        return;
+      }
+
+      const responseData = await response.json();
+      alert("Signup successful! Token: " + responseData.token);
+      dispatch(setUser(responseData.user));
+      // Handle successful signup, e.g., redirect to login page or dashboard
+
+      navigate("/login");
+    } catch (error) {
+      alert(error);
+    }
   };
 
   const handleClickShowPassword = () => {

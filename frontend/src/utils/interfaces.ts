@@ -19,11 +19,13 @@ export interface User {
   zipCode: string;
   isLoggedIn: boolean;
   jobTitle: string;
+  fatherName: string;
 }
 
 export interface UserState {
-  user: User[];
+  user: User | null;
   isDrawerOpen: boolean;
+  isLoggedIn: boolean;
 }
 
 export interface LoginFormData {

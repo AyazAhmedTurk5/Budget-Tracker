@@ -20,7 +20,11 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { setToggleDrawer } from "../../store/user/user.slice";
+import {
+  setLoggedIn,
+  setToggleDrawer,
+  setUser,
+} from "../../store/user/user.slice";
 
 const drawerWidth = 240;
 
@@ -113,6 +117,10 @@ export default function Sidenav() {
   }, [isDrawerOpen]);
 
   const handleLogout = () => {
+    //reset user state and navigate to login page
+    localStorage.removeItem("token");
+    dispatch(setUser(null));
+    dispatch(setLoggedIn(false));
     navigate("/login");
   };
 

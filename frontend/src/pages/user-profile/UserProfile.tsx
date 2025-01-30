@@ -16,10 +16,9 @@ import Sidenav from "../sideNav/Sidenav";
 import Header from "../header/Header";
 
 const UserProfile = () => {
-  const users = useSelector((state: RootState) => state.user.user[0]);
+  const user = useSelector((state: RootState) => state.user.user);
   const { isDrawerOpen } = useSelector((state: RootState) => state.user);
-  console.log("🚀 ~ UserProfile ~ isDrawerOpen:", isDrawerOpen);
-  const [formData, setFormData] = useState<User>(() => users || ({} as User));
+  const [formData, setFormData] = useState<User>(() => user || ({} as User));
   const [errors, setErrors] = useState<Partial<User>>({});
   const [showMyaccount, setShowMyaccount] = useState(false);
 
@@ -45,10 +44,10 @@ const UserProfile = () => {
   }, []);
 
   useEffect(() => {
-    if (users) {
-      setFormData((prevData) => ({ ...prevData, ...users }));
+    if (user) {
+      setFormData((prevData) => ({ ...prevData, ...user }));
     }
-  }, [users]);
+  }, [user]);
 
   // Handle Form Submission
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -150,7 +149,7 @@ const UserProfile = () => {
                   {/* Profile Image */}
                   <img
                     src={
-                      users.profilePicture || "https://via.placeholder.com/100"
+                      user?.profilePicture || "https://via.placeholder.com/100"
                     }
                     alt="Profile"
                     className="w-24 h-24 rounded-full cursor-pointer"
@@ -182,9 +181,9 @@ const UserProfile = () => {
                   />
                 </div>
                 <h2 className="text-[16px] font-semibold  text-[#2B2B2B]">
-                  {users.firstName} {users.lastName}
+                  {user?.firstName} {user?.lastName}
                 </h2>
-                <p className="text-sm text-[#9E9E9E]">{users.jobTitle}</p>
+                <p className="text-sm text-[#9E9E9E]">{user?.jobTitle || ""}</p>
               </div>
               <div className="mt-6 space-y-4 text-left">
                 <div className="flex items-center">
@@ -193,7 +192,9 @@ const UserProfile = () => {
                     alt="Website"
                     className="text-gray-400 mr-2"
                   />
-                  <p className="text-sm text-[#9E9E9E]">{users.phoneNumber}</p>
+                  <p className="text-sm text-[#9E9E9E]">
+                    {user?.phoneNumber || ""}
+                  </p>
                 </div>
                 <div className="flex items-center">
                   <img
@@ -201,7 +202,7 @@ const UserProfile = () => {
                     alt="Website"
                     className="text-gray-400 mr-2"
                   />
-                  <p className="text-sm text-[#9E9E9E]">{users.email}</p>
+                  <p className="text-sm text-[#9E9E9E]">{user?.email}</p>
                 </div>
                 <div className="flex items-center">
                   <img
@@ -209,7 +210,7 @@ const UserProfile = () => {
                     alt="Website"
                     className="text-gray-400 mr-2"
                   />
-                  <p className="text-sm text-[#9E9E9E]">{users.city}</p>
+                  <p className="text-sm text-[#9E9E9E]">{user?.city || ""}</p>
                 </div>
                 <div className="flex items-center">
                   <img
@@ -223,7 +224,7 @@ const UserProfile = () => {
                     rel="noopener noreferrer"
                     className="text-sm text-[#9E9E9E] hover:underline"
                   >
-                    {users.website}
+                    {user?.website || ""}
                   </a>
                 </div>
               </div>
@@ -366,7 +367,7 @@ const UserProfile = () => {
                   {/* Lower White Section */}
                   <div className="p-6">
                     <p className="text-[14px] text-gray-400 leading-relaxed">
-                      {users.aboutMe}
+                      {user?.aboutMe || ""}
                     </p>
                   </div>
                 </div>
@@ -391,35 +392,37 @@ const UserProfile = () => {
                             Full Name
                           </span>
                           <br />
-                          {users.firstName} {users.middleName} {users.lastName}
+                          {user?.firstName} {user?.middleName || ""}{" "}
+                          {user?.lastName}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Gender
                           </span>
                           <br />
-                          {users.gender}
+                          {user?.gender || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className="  font-[400] text-[#9E9E9E]">
                             Email
                           </span>
                           <br />
-                          {users.email}
+                          {user?.email}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Education
                           </span>
                           <br />
-                          {users.education}
+                          {user?.education || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Address
                           </span>
                           <br />
-                          {users.streetAddress}, {users.city}, {users.state}
+                          {user?.streetAddress || ""}, {user?.city || ""},
+                          {user?.state || ""}
                         </p>
                       </div>
 
@@ -430,35 +433,35 @@ const UserProfile = () => {
                             Father Name
                           </span>
                           <br />
-                          {users.middleName}
+                          {user?.fatherName || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className="font-[400] text-[#9E9E9E]">
                             Phone
                           </span>
                           <br />
-                          {users.phoneNumber}
+                          {user?.phoneNumber || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Zip Code
                           </span>
                           <br />
-                          {users.zipCode}
+                          {user?.zipCode || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Date of Birth
                           </span>
                           <br />
-                          {users.dateOfBirth}
+                          {user?.dateOfBirth || ""}
                         </p>
                         <p className="font-[500] text-[14px]">
                           <span className=" font-[400] text-[#9E9E9E]">
                             Budget Limit
                           </span>
                           <br />
-                          {users.budgetLimit}
+                          {user?.budgetLimit || ""}
                         </p>
                       </div>
                     </div>

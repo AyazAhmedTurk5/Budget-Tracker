@@ -17,8 +17,7 @@ const theme = createTheme({
 const App = () => {
   const navigate = useNavigate();
   const location = useLocation(); // Get current route
-  const { user } = useSelector((state: RootState) => state.user);
-  const isLoggedIn = user[0]?.isLoggedIn;
+  const { isLoggedIn } = useSelector((state: RootState) => state.user);
 
   // Redirect to login only if trying to access Expenses or Profile page
   useEffect(() => {
