@@ -18,11 +18,12 @@ export interface User {
   profilePicture: string;
   zipCode: string;
   isLoggedIn: boolean;
-  jobTitile: string;
+  jobTitle: string;
 }
 
 export interface UserState {
   user: User[];
+  isDrawerOpen: boolean;
 }
 
 export interface LoginFormData {

@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { User, UserState } from "../../utils/interfaces";
 
 const initialState: UserState = {
+  isDrawerOpen: false,
   user: [
     {
       userId: 1,
@@ -20,7 +21,7 @@ const initialState: UserState = {
       website: "https://janesmith.design",
       state: "New York",
       streetAddress: "456 Broadway Ave",
-      jobTitile: "UI/UX Designer",
+      jobTitle: "UI/UX Designer",
       budgetLimit: 7000,
       profilePicture: "https://example.com/profile2.jpg",
       zipCode: "10001",
@@ -53,8 +54,11 @@ const userSlice = createSlice({
         }
       }
     },
+    setToggleDrawer: (state) => {
+      state.isDrawerOpen = !state.isDrawerOpen;
+    },
   },
 });
 
-export const { setUser, updateUser } = userSlice.actions;
+export const { setUser, updateUser, setToggleDrawer } = userSlice.actions;
 export default userSlice.reducer;

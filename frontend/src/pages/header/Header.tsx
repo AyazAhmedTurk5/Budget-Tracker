@@ -2,17 +2,25 @@ import { AppBar, Toolbar, IconButton, Avatar, Box } from "@mui/material";
 import menuIcon from "../../assets/icons/Hamburger.svg";
 import bellIcon from "../../assets/icons/bellIcon.svg";
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
+import { setToggleDrawer } from "../../store/user/user.slice";
 
 const Header = () => {
   const users = useSelector((state: RootState) => state.user.user);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   return (
-    <AppBar position="static" color="transparent" elevation={0}>
+    <AppBar position="static" color="transparent" elevation={6}>
       <Toolbar sx={{ justifyContent: "space-between" }}>
-        <IconButton onClick={() => {}} edge="start" color="inherit">
+        <IconButton
+          onClick={() => {
+            dispatch(setToggleDrawer());
+          }}
+          edge="start"
+          className="!pr-4"
+          color="inherit"
+        >
           <img src={menuIcon} alt="Logo" />
         </IconButton>
 

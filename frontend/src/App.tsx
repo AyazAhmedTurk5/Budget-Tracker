@@ -3,7 +3,6 @@ import { createTheme, ThemeProvider } from "@mui/material";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
-import Header from "./pages/header/Header";
 import Expenses from "./pages/expenses/Expenses";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/root-reducer";
@@ -34,11 +33,6 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      {isLoggedIn &&
-      location.pathname !== "/login" &&
-      location.pathname !== "/signup" ? (
-        <Header />
-      ) : null}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
