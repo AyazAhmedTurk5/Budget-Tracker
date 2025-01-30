@@ -24,3 +24,18 @@ export interface User {
 export interface UserState {
   user: User[];
 }
+
+export interface LoginFormData {
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+}
+
+export interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  budget: number;
+}

@@ -1,6 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+
 import {
   TextField,
   Button,
@@ -21,32 +21,16 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { updateUser } from "../../store/user/user.slice";
-
-interface FormData {
-  email: string;
-  password: string;
-  rememberMe?: boolean;
-}
-
-const validationSchema = yup.object().shape({
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  password: yup
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .required("Password is required"),
-  rememberMe: yup.boolean(),
-});
+import { LoginFormData } from "../../utils/interfaces";
+import { LoginFormValidationSchema } from "../../utils/validation";
 
 const Login = () => {
   const {
     handleSubmit,
     control,
     formState: { errors },
-  } = useForm<FormData>({
-    resolver: yupResolver(validationSchema),
+  } = useForm<LoginFormData>({
+    resolver: yupResolver(LoginFormValidationSchema),
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -58,7 +42,7 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
-  const onSubmit = async (data: FormData) => {
+  const onSubmit = async (data: LoginFormData) => {
     const user = users.find(
       (user) => user.email === data.email && user.password === data.password
     );
@@ -117,62 +101,84 @@ const Login = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Email */}
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Email"
-                  fullWidth
-                  variant="outlined"
-                  type="email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton aria-label="message icon" edge="end">
-                        <MailOutlineIcon />
-                      </IconButton>
-                    ),
-                  }}
-                />
-              )}
-            />
+            <div className="mb-2">
+              <label
+                htmlFor="password"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Email
+              </label>
+
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    variant="outlined"
+                    type="email"
+                    placeholder="Test@gmail.com"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="message icon"
+                          className="!text-[#98A2B3]"
+                          edge="end"
+                        >
+                          <MailOutlineIcon />
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </div>
 
             {/* Password */}
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Password"
-                  fullWidth
-                  variant="outlined"
-                  type={showPassword ? "text" : "password"}
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                  InputProps={{
-                    endAdornment: (
-                      <IconButton
-                        aria-label="toggle password visibility"
-                        onClick={handleClickShowPassword}
-                        edge="end"
-                      >
-                        {showPassword ? (
-                          <VisibilityOffIcon />
-                        ) : (
-                          <VisibilityIcon />
-                        )}
-                      </IconButton>
-                    ),
-                  }}
-                />
-              )}
-            />
+            <div className="mb-2">
+              <label
+                htmlFor="password"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Password
+              </label>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    fullWidth
+                    variant="outlined"
+                    placeholder="Enter your password"
+                    type={showPassword ? "text" : "password"}
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                    sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          className="!text-[#98A2B3]"
+                          edge="end"
+                        >
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </div>
 
             {/* Remember Me */}
             <Box
@@ -211,8 +217,9 @@ const Login = () => {
               variant="contained"
               fullWidth
               sx={{
-                backgroundColor: "#6C63FF",
+                backgroundColor: "#7539FF",
                 color: "#fff",
+                padding: "10px",
                 fontWeight: "bold",
                 "&:hover": { backgroundColor: "#5a54d2" },
               }}

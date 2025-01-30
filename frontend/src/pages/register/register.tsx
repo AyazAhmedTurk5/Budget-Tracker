@@ -1,6 +1,6 @@
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+
 import {
   TextField,
   Button,
@@ -8,235 +8,278 @@ import {
   Box,
   Link,
   Divider,
+  IconButton,
 } from "@mui/material";
 import signUpImage from "../../assets/images/signup_illustration.svg";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import logo from "../../assets/images/BudgetTracker.svg";
-
-interface FormData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  budget: number;
-}
-const validationSchema = yup.object().shape({
-  firstName: yup
-    .string()
-    .matches(
-      /^[A-Za-z\s-]+$/,
-      "Only alphabets, spaces, and hyphens are allowed"
-    )
-    .max(50, "First Name cannot exceed 50 characters")
-    .required("First Name is required"),
-  lastName: yup
-    .string()
-    .matches(
-      /^[A-Za-z\s-]+$/,
-      "Only alphabets, spaces, and hyphens are allowed"
-    )
-    .max(50, "Last Name cannot exceed 50 characters")
-    .required("Last Name is required"),
-  email: yup
-    .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  password: yup
-    .string()
-    .min(8, "Password must be at least 8 characters")
-    .matches(
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
-      "Password must include alphabets, numbers, and special characters"
-    )
-    .required("Password is required"),
-  confirmPassword: yup
-    .string()
-    .oneOf([yup.ref("password"), undefined], "Passwords must match")
-    .required("Confirm Password is required"),
-  budget: yup
-    .number()
-    .typeError("Budget must be a number")
-    .min(1, "Budget must be at least 1")
-    .max(99999999, "Budget cannot exceed 99999999")
-    .required("Budget is required"),
-});
+import { RegistFormValidationSchema } from "../../utils/validation";
+import MailOutlineIcon from "@mui/icons-material/MailOutline";
+import { RegisterFormData } from "../../utils/interfaces";
+import { useState } from "react";
 
 const Register = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const {
     handleSubmit,
     control,
     formState: { errors },
   } = useForm({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(RegistFormValidationSchema),
   });
 
-  const onSubmit = (data: FormData) => {
+  const onSubmit = (data: RegisterFormData) => {
     console.log("Form Data: ", data);
+  };
+
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
+  const handleClickShowConfirmPassword = () => {
+    setShowConfirmPassword((prev) => !prev);
   };
 
   return (
     <div className="layout">
-      <img src={logo} alt="Logo" style={{ width: "300px", height: "50px" }} />
+      <img src={logo} alt="Logo" className="w-[300px] h-[50px]" />
 
       <Box
+        className="flex justify-center items-center bg-white mt-6"
         sx={{
-          display: "flex",
           flexDirection: { xs: "column", md: "row" },
-          justifyContent: "center",
-          alignItems: "center",
-          backgroundColor: "white",
         }}
       >
         {/* Form Section */}
         <Box
+          className="rounded-xl bg-[#fff]"
           sx={{
             width: { xs: "100%", md: "50%" },
-            backgroundColor: "#fff",
-            borderRadius: "12px",
             pr: { md: "40px" },
           }}
         >
-          <Typography
-            sx={{
-              fontWeight: "bold",
-              fontSize: "32px",
-              mt: 3,
-              textAlign: "start",
-            }}
-          >
+          <Typography className="!font-bold !text-[32px] !mt-3 !text-start bg-[#fff]">
             Sign Up
           </Typography>
-          <Typography
-            sx={{
-              mb: 3,
-              textAlign: "start",
-              color: "#878A99",
-              fontSize: "24px",
-              letterSpacing: "0.25px",
-            }}
-          >
+          <Typography className="!mb-3 !text-start !text-[#878A99] !text-[24px] !tracking-[0.25px]">
             Welcome to our community
           </Typography>
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* First Name and Last Name */}
-            <Box sx={{ display: "flex", gap: "1rem", mb: 2 }}>
-              <Controller
-                name="firstName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="First Name"
-                    fullWidth
-                    variant="outlined"
-                    error={!!errors.firstName}
-                    helperText={errors.firstName?.message}
-                    sx={{ backgroundColor: "#EFF4FB" }}
-                  />
-                )}
-              />
-              <Controller
-                name="lastName"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    label="Last Name"
-                    fullWidth
-                    variant="outlined"
-                    error={!!errors.lastName}
-                    helperText={errors.lastName?.message}
-                    sx={{ backgroundColor: "#EFF4FB" }}
-                  />
-                )}
-              />
-            </Box>
+            <div className="flex gap-4 mb-2">
+              <div className="w-full">
+                <label
+                  htmlFor="firstName"
+                  className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+                >
+                  First Name
+                </label>
+                <Controller
+                  name="firstName"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      id="firstName"
+                      fullWidth
+                      placeholder="Cameron"
+                      variant="outlined"
+                      error={!!errors.firstName}
+                      helperText={errors.firstName?.message}
+                      className="bg-[#EFF4FB]"
+                    />
+                  )}
+                />
+              </div>
+              <div className="w-full">
+                <label
+                  htmlFor="lastName"
+                  className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+                >
+                  Last Name
+                </label>
+                <Controller
+                  name="lastName"
+                  control={control}
+                  render={({ field }) => (
+                    <TextField
+                      {...field}
+                      id="lastName"
+                      fullWidth
+                      placeholder="Diaz"
+                      variant="outlined"
+                      error={!!errors.lastName}
+                      helperText={errors.lastName?.message}
+                      className="bg-[#EFF4FB]"
+                    />
+                  )}
+                />
+              </div>
+            </div>
 
             {/* Email */}
-            <Controller
-              name="email"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Email"
-                  fullWidth
-                  variant="outlined"
-                  type="email"
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
-                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                />
-              )}
-            />
+            <div className="mb-2">
+              <label
+                htmlFor="email"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Email
+              </label>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="email"
+                    fullWidth
+                    placeholder="Test@email.com"
+                    variant="outlined"
+                    type="email"
+                    error={!!errors.email}
+                    helperText={errors.email?.message}
+                    className="bg-[#EFF4FB]"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="message icon "
+                          className="cursor-default !text-[#98A2B3]"
+                          edge="end"
+                        >
+                          <MailOutlineIcon />
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </div>
 
             {/* Password */}
-            <Controller
-              name="password"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Password"
-                  fullWidth
-                  variant="outlined"
-                  type="password"
-                  error={!!errors.password}
-                  helperText={errors.password?.message}
-                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                />
-              )}
-            />
+            <div className="mb-2">
+              <label
+                htmlFor="password"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Password
+              </label>
+              <Controller
+                name="password"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="password"
+                    fullWidth
+                    placeholder="Enter your password"
+                    variant="outlined"
+                    type={showPassword ? "text" : "password"}
+                    error={!!errors.password}
+                    helperText={errors.password?.message}
+                    className="bg-[#EFF4FB]"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowPassword}
+                          className="!text-[#98A2B3]"
+                          edge="end"
+                        >
+                          {showPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </div>
+
             {/* Confirm Password */}
-            <Controller
-              name="confirmPassword"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Confirm Password"
-                  fullWidth
-                  variant="outlined"
-                  type="password"
-                  error={!!errors.confirmPassword}
-                  helperText={errors.confirmPassword?.message}
-                  sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                />
-              )}
-            />
+            <div className="mb-2">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Confirm Password
+              </label>
+              <Controller
+                name="confirmPassword"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="confirmPassword"
+                    placeholder="Confirm your password"
+                    fullWidth
+                    variant="outlined"
+                    type={showConfirmPassword ? "text" : "password"}
+                    error={!!errors.confirmPassword}
+                    helperText={errors.confirmPassword?.message}
+                    className="bg-[#EFF4FB]"
+                    InputProps={{
+                      endAdornment: (
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          onClick={handleClickShowConfirmPassword}
+                          edge="end"
+                          className="!text-[#98A2B3]"
+                        >
+                          {showConfirmPassword ? (
+                            <VisibilityOffIcon />
+                          ) : (
+                            <VisibilityIcon />
+                          )}
+                        </IconButton>
+                      ),
+                    }}
+                  />
+                )}
+              />
+            </div>
 
             {/* Budget */}
-            <Controller
-              name="budget"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Budget Limit"
-                  fullWidth
-                  variant="outlined"
-                  error={!!errors.budget}
-                  helperText={errors.budget?.message}
-                  sx={{ mb: 3, backgroundColor: "#EFF4FB" }}
-                />
-              )}
-            />
+            <div className="mb-3">
+              <label
+                htmlFor="budget"
+                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
+              >
+                Budget Limit
+              </label>
+              <Controller
+                name="budget"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    id="budget"
+                    fullWidth
+                    placeholder="Enter Amount"
+                    variant="outlined"
+                    error={!!errors.budget}
+                    helperText={errors.budget?.message}
+                    className="bg-[#EFF4FB]"
+                  />
+                )}
+              />
+            </div>
 
             <Button
               type="submit"
               variant="contained"
               fullWidth
-              sx={{
-                backgroundColor: "#6C63FF",
-                color: "#fff",
-                fontWeight: "bold",
-                "&:hover": { backgroundColor: "#5a54d2" },
-              }}
+              className="!bg-[#7539FF] !p-3 text-white font-bold !hover:bg-[#5a54d2]"
             >
               Sign Up
             </Button>
           </form>
+
           <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
             Already have an account?{" "}
             <Link href="/login" sx={{ color: "#6C63FF" }}>
@@ -249,15 +292,12 @@ const Register = () => {
             </Link>
           </Typography>
         </Box>
-        <Divider orientation="vertical" variant="middle" flexItem />
+        <Divider orientation="vertical" variant="fullWidth" flexItem />
         {/* Illustration Section */}
         <Box
+          className="items-center justify-center w-[50%] h-[100%]"
           sx={{
             display: { xs: "none", md: "flex" },
-            alignItems: "center",
-            justifyContent: "center",
-            width: "50%",
-            height: "100%",
           }}
         >
           <img

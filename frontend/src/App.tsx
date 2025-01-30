@@ -34,7 +34,11 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      {isLoggedIn ? <Header /> : null}
+      {isLoggedIn &&
+      location.pathname !== "/login" &&
+      location.pathname !== "/signup" ? (
+        <Header />
+      ) : null}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Register />} />
