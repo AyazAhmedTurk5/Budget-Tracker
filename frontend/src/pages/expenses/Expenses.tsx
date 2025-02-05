@@ -108,8 +108,10 @@ const Expenses = () => {
                     className="icon-box text-[#BCC0C9] focus:outline-[#7539FF]"
                   >
                     <option value="all  ">All</option>
-                    <option value="highest">Highest Expense</option>
-                    <option value="lowest">Lowest Expense</option>
+                    <option value="highest">Price - Highest to lowest</option>
+                    <option value="lowest">Price - Lowest to highest</option>
+                    <option value="newest">Date - Newest to oldest</option>
+                    <option value="oldest">Date - Oldest to newest</option>
                   </select>
                 </div>
 

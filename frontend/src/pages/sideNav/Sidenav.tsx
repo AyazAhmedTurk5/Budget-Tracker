@@ -25,6 +25,7 @@ import {
   setToggleDrawer,
   setUser,
 } from "../../store/user/user.slice";
+import { toast } from "react-toastify";
 
 const drawerWidth = 240;
 
@@ -121,6 +122,7 @@ export default function Sidenav() {
     localStorage.removeItem("token");
     dispatch(setUser(null));
     dispatch(setLoggedIn(false));
+    toast.success("Logged out successfully!");
     navigate("/login");
   };
 

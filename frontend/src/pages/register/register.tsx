@@ -21,6 +21,8 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { setUser } from "../../store/user/user.slice";
 import { useNavigate } from "react-router-dom";
+import api from "../../api/api";
+import { toast } from "react-toastify";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -36,42 +38,31 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    console.log("Form Data: ", data);
-
-    const { firstName, lastName, email, password, budget } = data;
+    const { firstName, lastName, email, password, budgetLimit } = data;
 
     try {
-      const response = await fetch("http://localhost:3000/budgets/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          password,
-          budget,
-        }),
+      const response = await api.post("/budgets/signup", {
+        firstName,
+        lastName,
+        email,
+        password,
+        budgetLimit,
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        alert("Signup failed: " + errorData.message);
-        return;
-      }
+      const responseData = response.data;
+      // alert("Signup successful! Token: " + responseData.token);  //Add Toasters
 
-      const responseData = await response.json();
-      alert("Signup successful! Token: " + responseData.token);
+      // Store user data in Redux
       dispatch(setUser(responseData.user));
-      // Handle successful signup, e.g., redirect to login page or dashboard
 
+       toast.success("Signup Successful!  Please Login through this Login Page");
+
+      // Redirect to login page
       navigate("/login");
     } catch (error) {
-      alert(error);
+      console.log(error);
     }
   };
-
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
   };
@@ -285,23 +276,23 @@ const Register = () => {
             {/* Budget */}
             <div className="mb-3">
               <label
-                htmlFor="budget"
+                htmlFor="budgetLimit"
                 className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
               >
                 Budget Limit
               </label>
               <Controller
-                name="budget"
+                name="budgetLimit"
                 control={control}
                 render={({ field }) => (
                   <TextField
                     {...field}
-                    id="budget"
+                    id="budgetLimit"
                     fullWidth
                     placeholder="Enter Amount"
                     variant="outlined"
-                    error={!!errors.budget}
-                    helperText={errors.budget?.message}
+                    error={!!errors.budgetLimit}
+                    helperText={errors.budgetLimit?.message}
                     className="bg-[#EFF4FB]"
                   />
                 )}

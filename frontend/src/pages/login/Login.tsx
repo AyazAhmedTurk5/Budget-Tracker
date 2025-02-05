@@ -22,6 +22,8 @@ import { useDispatch } from "react-redux";
 import { setLoggedIn, setUser } from "../../store/user/user.slice";
 import { LoginFormData } from "../../utils/interfaces";
 import { LoginFormValidationSchema } from "../../utils/validation";
+import api from "../../api/api";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const {
@@ -42,33 +44,27 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await fetch("http://localhost:3000/budgets/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await api.post("/budgets/login", data);
 
-      if (!response.ok) {
-        throw new Error("Invalid email or password");
-      }
+      const result = response.data;
 
-      const result = await response.json();
-
-      // Assuming the response contains a userId and a token
       dispatch(setUser(result.user)); // Set user state
       dispatch(setLoggedIn(true)); // Set login state
 
-      // Store token in localStorage (if needed)
       localStorage.setItem("token", result.token);
+
+      toast.success("Login successful !!");
 
       navigate("/");
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error("Wrong user name or password. Please try again!", {
+          style: { backgroundColor: "#FDE2E2", color: "#D32F2F" }, 
+        });
       } else {
-        alert("An unknown error occurred");
+        toast.error("Something went Wrong!", {
+          style: { backgroundColor: "#FDE2E2", color: "#D32F2F" }, 
+        });
       }
     }
   };

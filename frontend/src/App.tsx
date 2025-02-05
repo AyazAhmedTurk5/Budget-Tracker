@@ -7,6 +7,7 @@ import Expenses from "./pages/expenses/Expenses";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/root-reducer";
 import { useEffect } from "react";
+import { ToastContainer } from "react-toastify";
 
 const theme = createTheme({
   typography: {
@@ -16,7 +17,7 @@ const theme = createTheme({
 
 const App = () => {
   const navigate = useNavigate();
-  const location = useLocation(); // Get current route
+  const location = useLocation();
   const { isLoggedIn } = useSelector((state: RootState) => state.user);
 
   // Redirect to login only if trying to access Expenses or Profile page
@@ -42,6 +43,14 @@ const App = () => {
           </>
         ) : null}
       </Routes>
+      <ToastContainer
+      toastStyle={{ backgroundColor: "#E1F3EC", color: "#08B461", border:"1px solid #08B461 " }}
+        autoClose={3000}
+        hideProgressBar={true}
+        newestOnTop={true}
+        theme="light"
+        aria-label={undefined}
+      />
     </ThemeProvider>
   );
 };

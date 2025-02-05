@@ -1,17 +1,17 @@
 const mongoose = require("mongoose");
 
 const budgetSchema = new mongoose.Schema({
-  name: {
+  title: {
     required: true,
     type: String,
   },
-  age: {
+  date: {
+    type: Date,
+    default: Date.now,
+  },
+  price: {
     required: true,
     type: Number,
-  },
-  limit: {
-    required: true,
-    type: Number, // The budget limit for each category
   },
 });
 
@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Additional fields
   firstName: {
     type: String,
     required: true,
@@ -34,14 +33,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  budget: {
+  fatherName: {
+    type: String,
+  },
+  aboutMe: { type: String },
+  website: { type: String },
+  budgetLimit: {
     type: Number,
     required: true,
   },
-  // budgets: [budgetSchema], // Embedding an array of budget categories
 });
 
 module.exports = {
-  Budget: mongoose.model("Budget", budgetSchema), // This can still be used for budget-specific actions if needed
+  Budget: mongoose.model("Budget", budgetSchema),
   User: mongoose.model("User", userSchema),
 };

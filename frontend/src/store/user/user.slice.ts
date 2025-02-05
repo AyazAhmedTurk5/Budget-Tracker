@@ -20,7 +20,7 @@ const userSlice = createSlice({
       }
     },
     setLoggedIn: (state, action: PayloadAction<boolean>) => {
-      state.isLoggedIn = action.payload; // Set login state
+      state.isLoggedIn = action.payload;
     },
     setToggleDrawer: (state) => {
       state.isDrawerOpen = !state.isDrawerOpen;

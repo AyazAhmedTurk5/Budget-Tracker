@@ -14,9 +14,11 @@ import { validateForm } from "../../utils/validation";
 import EditIcon from "@mui/icons-material/Edit";
 import Sidenav from "../sideNav/Sidenav";
 import Header from "../header/Header";
+import { toast } from "react-toastify";
 
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.user.user);
+  console.log("🚀 ~ UserProfile ~ user:", user);
   const { isDrawerOpen } = useSelector((state: RootState) => state.user);
   const [formData, setFormData] = useState<User>(() => user || ({} as User));
   const [errors, setErrors] = useState<Partial<User>>({});
@@ -30,11 +32,17 @@ const UserProfile = () => {
     if (file) {
       const reader = new FileReader();
       reader.readAsDataURL(file);
+      toast.success("Profile picture updated successfully!");
+
       reader.onloadend = () => {
         dispatch(
           updateUser({ userId: 1, profilePicture: reader.result as string })
         );
       };
+    } else {
+      toast.error("Error uploading profile", {
+        style: { backgroundColor: "#FDE2E2", color: "#D32F2F" }, // Red-themed error toast
+      });
     }
   };
 
@@ -58,7 +66,11 @@ const UserProfile = () => {
 
     if (Object.keys(validationErrors).length === 0) {
       dispatch(updateUser(formData));
-      alert("User updated successfully!");
+      toast.success("Profile updated successfully!");
+    } else {
+      toast.error("Please fill all mentioned Fields!", {
+        style: { backgroundColor: "#FDE2E2", color: "#D32F2F" },
+      });
     }
   };
 
@@ -151,8 +163,10 @@ const UserProfile = () => {
                     src={
                       user?.profilePicture || "https://via.placeholder.com/100"
                     }
-                    alt="Profile"
-                    className="w-24 h-24 rounded-full cursor-pointer"
+                    alt="Profile "
+                    className={`w-24 h-24 rounded-full${
+                      showMyaccount ? "cursor-pointer" : ""
+                    } `}
                     onClick={() =>
                       document.getElementById("imageUpload")?.click()
                     }
@@ -172,13 +186,15 @@ const UserProfile = () => {
                   )}
 
                   {/* Hidden file input */}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    hidden
-                    id="imageUpload"
-                  />
+                  {showMyaccount && (
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      hidden
+                      id="imageUpload"
+                    />
+                  )}
                 </div>
                 <h2 className="text-[16px] font-semibold  text-[#2B2B2B]">
                   {user?.firstName} {user?.lastName}
@@ -421,7 +437,7 @@ const UserProfile = () => {
                             Address
                           </span>
                           <br />
-                          {user?.streetAddress || ""}, {user?.city || ""},
+                          {user?.streetAddress || ""} {user?.city || ""}
                           {user?.state || ""}
                         </p>
                       </div>

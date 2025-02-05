@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store/root-reducer";
 import { setToggleDrawer } from "../../store/user/user.slice";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const user = useSelector((state: RootState) => state.user.user);
@@ -25,7 +26,12 @@ const Header = () => {
         </IconButton>
 
         <Box display="flex" alignItems="center" gap={2}>
-          <IconButton color="inherit">
+          <IconButton
+            onClick={() => {
+              toast.warning("Feature not available yet");
+            }}
+            color="inherit"
+          >
             <img src={bellIcon} alt="Bell Icon" />
           </IconButton>
           <Avatar

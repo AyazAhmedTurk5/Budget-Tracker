@@ -65,7 +65,7 @@ export const RegistFormValidationSchema = yup.object().shape({
     .string()
     .oneOf([yup.ref("password"), undefined], "Passwords must match")
     .required("Confirm Password is required"),
-  budget: yup
+  budgetLimit: yup
     .number()
     .typeError("Budget must be a number")
     .min(1, "Budget must be at least 1")

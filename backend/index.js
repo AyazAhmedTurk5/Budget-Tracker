@@ -1,5 +1,5 @@
-const routes = require("./routes/route");
 require("dotenv").config();
+const routes = require("./routes/route");
 const express = require("express");
 const mongoose = require("mongoose");
 const mongoString = process.env.DATABASE_URL;
@@ -13,10 +13,8 @@ app.use(
   })
 );
 
-// Middleware to parse JSON requests
 app.use(express.json());
 
-// Define your routes
 app.use("/budgets", routes);
 
 // Connect to MongoDB
