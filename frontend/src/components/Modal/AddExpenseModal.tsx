@@ -9,22 +9,38 @@ import {
   Typography,
   Box,
 } from "@mui/material";
+import { format } from "date-fns";
 import CloseIcon from "../../assets/icons/Close-icon.svg";
+import { ExpenseFormData } from "../../utils/interfaces";
 
 interface AddExpenseModalProps {
   open: boolean;
   modalType: string;
+  selectedExpense: ExpenseFormData;
   handleClose: () => void;
+  handleAdd?: (expenseData: ExpenseFormData) => void;
+  handleEdit?: (id: string, updatedExpense: ExpenseFormData) => void;
+  handleDelete?: (id: string) => void;
 }
 
 const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   open,
   handleClose,
+  selectedExpense,
   modalType,
+  handleAdd,
+  handleEdit,
+  handleDelete,
 }) => {
-  const [title, setTitle] = useState("");
-  const [price, setPrice] = useState("");
-  const [date, setDate] = useState("");
+  const [title, setTitle] = useState(
+    modalType !== "Add Expense" ? selectedExpense.title ?? "" : ""
+  );
+  const [price, setPrice] = useState(
+    modalType !== "Add Expense" ? selectedExpense.price.toString() ?? "" : ""
+  );
+  const [date, setDate] = useState(
+    modalType !== "Add Expense" ? selectedExpense.date ?? "" : ""
+  );
 
   // Reusable function to render a field
   const renderField = (
@@ -138,6 +154,20 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
             backgroundColor:
               modalType === "Delete Expense" ? "#EF4435" : "#7539FF",
           }}
+          onClick={() => {
+            if (modalType === "Add Expense") {
+              const formatedDate = format(date, "dd-MM-yyyy");
+              handleAdd?.({ title, price: Number(price), date: formatedDate });
+            } else if (modalType === "Edit Expense") {
+              handleEdit?.(selectedExpense._id ?? "", {
+                title,
+                price: Number(price),
+                date,
+              });
+            } else if (modalType === "Delete Expense") {
+              handleDelete?.(selectedExpense._id ?? "");
+            }
+          }}
           color="primary"
           disabled={
             modalType !== "Delete Expense" && (!title || !price || !date)
@@ -146,8 +176,8 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           {modalType === "Add Expense"
             ? "Add"
             : modalType === "Edit Expense"
-              ? "Save Changes"
-              : "Delete"}
+            ? "Save Changes"
+            : "Delete"}
         </Button>
       </DialogActions>
     </Dialog>

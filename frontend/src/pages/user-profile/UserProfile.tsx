@@ -18,7 +18,6 @@ import { toast } from "react-toastify";
 
 const UserProfile = () => {
   const user = useSelector((state: RootState) => state.user.user);
-  console.log("🚀 ~ UserProfile ~ user:", user);
   const { isDrawerOpen } = useSelector((state: RootState) => state.user);
   const [formData, setFormData] = useState<User>(() => user || ({} as User));
   const [errors, setErrors] = useState<Partial<User>>({});

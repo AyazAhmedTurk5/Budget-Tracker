@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DeleteIcon from "../../assets/icons/delete-icon.svg";
 import EditIcon from "../../assets/icons/edit-icon.svg";
 import { FaSearch } from "react-icons/fa";
@@ -6,63 +6,91 @@ import AddExpenseModal from "../../components/Modal/AddExpenseModal";
 import { Box } from "@mui/material";
 import Sidenav from "../sideNav/Sidenav";
 import Header from "../header/Header";
+import api from "../../api/api";
+import { ExpenseFormData } from "../../utils/interfaces";
+import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  addExpense,
+  deleteExpense,
+  editExpense,
+} from "../../store/expenses/expenses.slice";
+import { RootState } from "../../store/root-reducer";
+import { getCurrentDate } from "../../utils/validation";
 
 const Expenses = () => {
-  const [openAddExpenseModal, setOpenAddExpenseModal] = useState(false);
-  const [openEditExpenseModal, setOpenEditExpenseModal] = useState(false);
-  const [openDeleteExpenseModal, setOpenDeleteExpenseModal] = useState(false);
+  const [openAddExpenseModal, setOpenAddExpenseModal] =
+    useState<boolean>(false);
+  const [openEditExpenseModal, setOpenEditExpenseModal] =
+    useState<boolean>(false);
+  const [openDeleteExpenseModal, setOpenDeleteExpenseModal] =
+    useState<boolean>(false);
+  const [selectedExpense, setSelectedExpense] = useState<ExpenseFormData>(
+    {} as ExpenseFormData
+  );
+  const dispatch = useDispatch();
+  const [date, setDate] = useState(getCurrentDate());
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const user = useSelector((state: RootState) => state.user.user);
 
-  const expensesData = [
-    {
-      id: 1,
-      name: "Prestigious Clientele Segment",
-      expenditure: 50,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 2,
-      name: "Prestigious Clientele Segment",
-      expenditure: 30,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 3,
-      name: "Prestigious Clientele Segment",
-      expenditure: 10,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 4,
-      name: "Prestigious Clientele Segment",
-      expenditure: 80,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 5,
-      name: "Prestigious Clientele Segment",
-      expenditure: 50,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 6,
-      name: "Prestigious Clientele Segment",
-      expenditure: 30,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-    {
-      id: 7,
-      name: "Prestigious Clientele Segment",
-      expenditure: 10,
-      price: 25000,
-      date: "22 Jan 2022",
-    },
-  ];
+  const expensesData = expenses;
+
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      try {
+        const response = await api.get("/budgets");
+        const result = response.data;
+        if (result.expenses) {
+          dispatch(addExpense(result.expenses));
+        }
+      } catch (error) {
+        toast.error(error as string);
+      }
+    };
+    fetchExpenses();
+  }, [dispatch]);
+
+  const handleAdd = async (updatedExpense: ExpenseFormData) => {
+    try {
+      const response = await api.post("/budgets/add-expense", updatedExpense);
+      const result = response.data;
+
+      dispatch(addExpense(result.expense));
+      toast.success("Expense added successfully!");
+
+      handleClose();
+    } catch (error) {
+      toast.error(error as string);
+    }
+  };
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await api.delete(`/budgets/delete-expense/${id}`);
+      if (response) {
+        toast.success("Expense Deleted successfully!");
+      }
+    } catch (error) {
+      toast.error(error as string);
+    }
+    dispatch(deleteExpense(id));
+    handleClose(); // Close the modal
+  };
+  const handleEdit = async (id: string, updatedExpense: ExpenseFormData) => {
+    try {
+      const response = await api.patch(
+        `/budgets/edit-expense/${id}`,
+        updatedExpense
+      );
+      if (response) {
+        toast.success("Expense Edited successfully!");
+      }
+    } catch (error) {
+      toast.error(error as string);
+    }
+    dispatch(editExpense({ id, updatedExpense }));
+    handleClose(); // Close the modal
+  };
+
   const handleClose = () => {
     setOpenAddExpenseModal(false);
     setOpenEditExpenseModal(false);
@@ -126,6 +154,8 @@ const Expenses = () => {
                   <input
                     type="date"
                     id="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
                     className="icon-box text-[#BCC0C9] text-[14px] "
                   />
                 </div>
@@ -162,18 +192,22 @@ const Expenses = () => {
               </thead>
               <tbody>
                 {expensesData.map((expense) => (
-                  <tr key={expense.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4 heading">{expense.name}</td>
+                  <tr key={expense._id} className="border-b hover:bg-gray-50">
+                    <td className="p-4 heading">{expense.title}</td>
                     <td className="p-4">
                       <div className="flex items-center">
                         <div className="w-full bg-gray-200 rounded h-2.5">
                           <div
                             className="bg-[#7539FF] h-2.5 rounded"
-                            style={{ width: `${expense.expenditure}%` }}
+                            style={{
+                              width: `${
+                                (expense.price / (user?.budgetLimit ?? 1)) * 100
+                              }%`,
+                            }}
                           ></div>
                         </div>
                         <span className="ml-2 text-gray-600">
-                          {expense.expenditure}%
+                          {(expense.price / (user?.budgetLimit ?? 1)) * 100}%
                         </span>
                       </div>
                     </td>
@@ -184,7 +218,10 @@ const Expenses = () => {
                     <td className="p-4 flex justify-center space-x-4">
                       <button
                         className="text-red-500"
-                        onClick={() => setOpenDeleteExpenseModal(true)}
+                        onClick={() => {
+                          setSelectedExpense(expense);
+                          setOpenDeleteExpenseModal(true);
+                        }}
                       >
                         <img
                           style={{ width: "15px", height: "17px" }}
@@ -194,7 +231,10 @@ const Expenses = () => {
                       </button>
                       <button
                         className="text-blue-500"
-                        onClick={() => setOpenEditExpenseModal(true)}
+                        onClick={() => {
+                          setSelectedExpense(expense);
+                          setOpenEditExpenseModal(true);
+                        }}
                       >
                         <img
                           style={{ width: "15px", height: "17px" }}
@@ -208,18 +248,24 @@ const Expenses = () => {
               </tbody>
             </table>
 
-            <div className="p-4 flex justify-between items-center border-t bg-gray-50">
-              <span className="text-sm text-gray-600">Showing 7 / 235</span>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 rounded bg-[#7539FF] text-white">
-                  1
-                </button>
-                <button className="px-3 py-1 rounded bg-gray-200">2</button>
-                <button className="px-3 py-1 rounded bg-gray-200">3</button>
-                <span className="px-3 py-1">...</span>
-                <button className="px-3 py-1 rounded bg-gray-200">10</button>
+            {expensesData.length >= 1 ? (
+              <div className="p-4 flex justify-between items-center border-t bg-gray-50">
+                <span className="text-sm text-gray-600">Showing 7 / 235</span>
+                <div className="flex space-x-2">
+                  <button className="px-3 py-1 rounded bg-[#7539FF] text-white">
+                    1
+                  </button>
+                  <button className="px-3 py-1 rounded bg-gray-200">2</button>
+                  <button className="px-3 py-1 rounded bg-gray-200">3</button>
+                  <span className="px-3 py-1">...</span>
+                  <button className="px-3 py-1 rounded bg-gray-200">10</button>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="p-4 flex justify-center  items-center border-t bg-gray-50">
+                <span className="text-sm text-gray-600">No Expenses found</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -227,21 +273,27 @@ const Expenses = () => {
           <AddExpenseModal
             open={openAddExpenseModal}
             handleClose={handleClose}
+            selectedExpense={selectedExpense}
             modalType="Add Expense"
+            handleAdd={handleAdd}
           />
         )}
         {openDeleteExpenseModal && (
           <AddExpenseModal
             open={openDeleteExpenseModal}
             handleClose={handleClose}
+            selectedExpense={selectedExpense}
             modalType="Delete Expense"
+            handleDelete={handleDelete}
           />
         )}
         {openEditExpenseModal && (
           <AddExpenseModal
             open={openEditExpenseModal}
             handleClose={handleClose}
+            selectedExpense={selectedExpense}
             modalType="Edit Expense"
+            handleEdit={handleEdit}
           />
         )}
       </Box>

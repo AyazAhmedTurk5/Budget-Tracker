@@ -22,10 +22,20 @@ export interface User {
   fatherName: string;
 }
 
+export interface ExpenseFormData {
+  _id?: string;
+  title: string;
+  date?: string;
+  price: number;
+}
+
 export interface UserState {
   user: User | null;
   isDrawerOpen: boolean;
   isLoggedIn: boolean;
+}
+export interface ExpenseState {
+  expenses: ExpenseFormData[];
 }
 
 export interface LoginFormData {

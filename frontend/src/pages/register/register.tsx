@@ -55,12 +55,12 @@ const Register = () => {
       // Store user data in Redux
       dispatch(setUser(responseData.user));
 
-       toast.success("Signup Successful!  Please Login through this Login Page");
+      toast.success("Signup Successful!  Please Login through this Login Page");
 
       // Redirect to login page
       navigate("/login");
     } catch (error) {
-      console.log(error);
+      toast.error(error as string);
     }
   };
   const handleClickShowPassword = () => {

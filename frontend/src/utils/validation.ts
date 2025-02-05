@@ -72,3 +72,11 @@ export const RegistFormValidationSchema = yup.object().shape({
     .max(99999999, "Budget cannot exceed 99999999")
     .required("Budget is required"),
 });
+
+export const getCurrentDate = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0"); // Add leading zero
+  const day = String(today.getDate()).padStart(2, "0"); // Add leading zero
+  return `${year}-${month}-${day}`; // yyyy-mm-dd
+};
