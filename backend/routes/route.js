@@ -10,19 +10,18 @@ module.exports = router;
 //middleware along with routes
 
 // Add a new expense
-router.post("/expenses", async (req, res) => {
+router.post("/add-expense", async (req, res) => {
   try {
-    const { userId, title, price, category } = req.body;
+    const { title, price, date } = req.body;
 
-    if (!userId || !title || !price || !category) {
+    if (!title || !price) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     const newExpense = new Budget({
-      userId,
       title,
       price,
-      category,
+      date,
     });
 
     await newExpense.save();
@@ -30,6 +29,60 @@ router.post("/expenses", async (req, res) => {
     res
       .status(201)
       .json({ message: "Expense added successfully", expense: newExpense });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.delete("/delete-expense/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedExpense = await Budget.findByIdAndDelete(id);
+
+    if (!deletedExpense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    res.status(200).json({ message: "Expense deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.patch("/edit-expense/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, price, date } = req.body;
+
+    // Check if the expense exists
+    const existingExpense = await Budget.findById(id);
+
+    if (!existingExpense) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    // Update fields only if provided
+    if (title) existingExpense.title = title;
+    if (price) existingExpense.price = price;
+    if (date) existingExpense.date = date;
+
+    await existingExpense.save();
+
+    res.status(200).json({
+      message: "Expense updated successfully",
+      expense: existingExpense,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+router.get("/", async (req, res) => {
+  try {
+    const expenses = await Budget.find();
+
+    res.status(200).json(expenses);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -98,7 +151,6 @@ router.post("/signup", async (req, res) => {
     // Save the user to the database
     await newUser.save();
 
-    console.log(newUser);
     // Generate a JWT token
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
