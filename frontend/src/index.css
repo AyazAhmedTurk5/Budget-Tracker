@@ -14,6 +14,10 @@
   padding-left: 4rem;
 }
 
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
 .heading {
   font-weight: 400;
   font-size: 14px;

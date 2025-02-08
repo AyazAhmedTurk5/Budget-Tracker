@@ -13,6 +13,9 @@ import { format } from "date-fns";
 import CloseIcon from "../../assets/icons/Close-icon.svg";
 import { ExpenseFormData } from "../../utils/interfaces";
 
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
 interface AddExpenseModalProps {
   open: boolean;
   modalType: string;
@@ -38,10 +41,23 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const [price, setPrice] = useState(
     modalType !== "Add Expense" ? selectedExpense.price.toString() ?? "" : ""
   );
-  const [date, setDate] = useState(
-    modalType !== "Add Expense" ? selectedExpense.date ?? "" : ""
+  const formatDate = (date: Date | null): string | null => {
+    if (!date) return null;
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const [date, setDate] = useState<string | null>(
+    modalType !== "Add Expense"
+      ? formatDate(new Date(selectedExpense.date))
+      : null
   );
 
+  const handleDateChange = (selectedDate: Date | null) => {
+    setDate(formatDate(selectedDate)); // Store formatted date
+  };
   // Reusable function to render a field
   const renderField = (
     label: string,
@@ -77,13 +93,15 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
       </Typography>
       {modalType === "Delete Expense" ? (
         <Typography variant="body1" className="text-[#9E9E9E] !pt-4">
-          {date}
+          {date ? format(date, "dd-MM-yyyy") : ""}
         </Typography>
       ) : (
-        <input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+        <DatePicker
+          selected={date ? new Date(date.split("-").reverse().join("-")) : null}
+          placeholderText="Select Date"
+          onChange={handleDateChange}
+          dateFormat="dd-MM-yyyy"
+          portalId="root"
           className="cursor-pointer text-[#BCC0C9] bg-[#EFF4FB] rounded-md w-full px-4 py-4"
         />
       )}
@@ -156,14 +174,16 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
           }}
           onClick={() => {
             if (modalType === "Add Expense") {
-              const formatedDate = format(date, "dd-MM-yyyy");
-              handleAdd?.({ title, price: Number(price), date: formatedDate });
+              handleAdd?.({
+                title,
+                price: Number(price),
+                date: date ? format(date, "dd-MM-yyyy") : "",
+              });
             } else if (modalType === "Edit Expense") {
-              const formatedDate = format(date, "dd-MM-yyyy");
               handleEdit?.(selectedExpense._id ?? "", {
                 title,
                 price: Number(price),
-                date: formatedDate,
+                date: date ? format(date, "dd-MM-yyyy") : "",
               });
             } else if (modalType === "Delete Expense") {
               handleDelete?.(selectedExpense._id ?? "");
