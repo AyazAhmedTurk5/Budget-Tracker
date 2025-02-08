@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import DeleteIcon from "../../assets/icons/delete-icon.svg";
 import EditIcon from "../../assets/icons/edit-icon.svg";
 import { FaSearch } from "react-icons/fa";
@@ -17,8 +17,11 @@ import {
 } from "../../store/expenses/expenses.slice";
 import { RootState } from "../../store/root-reducer";
 import { getCurrentDate } from "../../utils/validation";
+import { format } from "date-fns";
 
 const Expenses = () => {
+  const expenses = useSelector((state: RootState) => state.expenses.expenses);
+  const dispatch = useDispatch();
   const [openAddExpenseModal, setOpenAddExpenseModal] =
     useState<boolean>(false);
   const [openEditExpenseModal, setOpenEditExpenseModal] =
@@ -28,12 +31,56 @@ const Expenses = () => {
   const [selectedExpense, setSelectedExpense] = useState<ExpenseFormData>(
     {} as ExpenseFormData
   );
-  const dispatch = useDispatch();
-  const [date, setDate] = useState(getCurrentDate());
-  const expenses = useSelector((state: RootState) => state.expenses.expenses);
-  const user = useSelector((state: RootState) => state.user.user);
 
-  const expensesData = expenses;
+  const [date, setDate] = useState(getCurrentDate());
+  const [sortByFilter, setSortByFilter] = useState<string>("");
+  const [expensesData, setExpensesData] = useState(expenses);
+  useEffect(() => {
+    const filterExpensesByDate = () => {
+      if (!date) return expenses;
+      return expenses.filter((expense) => expense.date === date);
+    };
+
+    setExpensesData(filterExpensesByDate());
+  }, [date, expenses]);
+  useEffect(() => {
+    const sortExpenses = () => {
+      const sortedExpenses = [...expenses];
+      switch (sortByFilter) {
+        case "highest":
+          sortedExpenses.sort((a, b) => b.price - a.price);
+          break;
+        case "lowest":
+          sortedExpenses.sort((a, b) => a.price - b.price);
+          break;
+        case "newest":
+          sortedExpenses.sort(
+            (a, b) =>
+              new Date(b.date.replace(/-/g, "/")).getTime() -
+              new Date(a.date.replace(/-/g, "/")).getTime()
+          );
+          break;
+        case "oldest":
+          sortedExpenses.sort(
+            (a, b) =>
+              new Date(a.date.replace(/-/g, "/")).getTime() -
+              new Date(b.date.replace(/-/g, "/")).getTime()
+          );
+          break;
+        default:
+          break;
+      }
+      return sortedExpenses;
+    };
+
+    setExpensesData(sortExpenses());
+  }, [sortByFilter, expenses]);
+
+  const totalExpenditure = useCallback(() => {
+    let total = 0;
+    expensesData.map((expense) => (total += expense.price));
+    return total;
+  }, [expensesData]);
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -133,6 +180,7 @@ const Expenses = () => {
                   </label>
                   <select
                     id="sortBy"
+                    onChange={(e) => setSortByFilter(e.target.value)}
                     className="icon-box text-[#BCC0C9] focus:outline-[#7539FF]"
                   >
                     <option value="all  ">All</option>
@@ -151,11 +199,16 @@ const Expenses = () => {
                   >
                     By Date
                   </label>
+
                   <input
                     type="date"
                     id="date"
                     value={date}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e) => {
+                      const formatedDate = format(e.target.value, "dd-MM-yyyy");
+
+                      setDate(formatedDate);
+                    }}
                     className="icon-box text-[#BCC0C9] text-[14px] "
                   />
                 </div>
@@ -200,14 +253,18 @@ const Expenses = () => {
                           <div
                             className="bg-[#7539FF] h-2.5 rounded"
                             style={{
-                              width: `${
-                                (expense.price / (user?.budgetLimit ?? 1)) * 100
-                              }%`,
+                              width: `${Math.floor(
+                                (expense.price / (totalExpenditure() ?? 1)) *
+                                  100
+                              )}%`,
                             }}
                           ></div>
                         </div>
                         <span className="ml-2 text-gray-600">
-                          {(expense.price / (user?.budgetLimit ?? 1)) * 100}%
+                          {Math.ceil(
+                            (expense.price / (totalExpenditure() ?? 1)) * 100
+                          )}
+                          %
                         </span>
                       </div>
                     </td>

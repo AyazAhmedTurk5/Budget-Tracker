@@ -159,10 +159,11 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
               const formatedDate = format(date, "dd-MM-yyyy");
               handleAdd?.({ title, price: Number(price), date: formatedDate });
             } else if (modalType === "Edit Expense") {
+              const formatedDate = format(date, "dd-MM-yyyy");
               handleEdit?.(selectedExpense._id ?? "", {
                 title,
                 price: Number(price),
-                date,
+                date: formatedDate,
               });
             } else if (modalType === "Delete Expense") {
               handleDelete?.(selectedExpense._id ?? "");

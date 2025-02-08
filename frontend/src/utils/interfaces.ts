@@ -25,7 +25,7 @@ export interface User {
 export interface ExpenseFormData {
   _id?: string;
   title: string;
-  date?: string;
+  date: string;
   price: number;
 }
 

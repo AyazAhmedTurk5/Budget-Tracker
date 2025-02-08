@@ -65,7 +65,13 @@ router.patch("/edit-expense/:id", async (req, res) => {
     // Update fields only if provided
     if (title) existingExpense.title = title;
     if (price) existingExpense.price = price;
-    if (date) existingExpense.date = date;
+    if (date) {
+      const formattedDate = new Date(date)
+        .toLocaleDateString("en-GB")
+        .split("/")
+        .join("-");
+      existingExpense.date = formattedDate;
+    }
 
     await existingExpense.save();
 
