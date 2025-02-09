@@ -1,3 +1,8 @@
+import { useState } from "react";
+import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
@@ -14,15 +19,12 @@ import signUpImage from "../../assets/images/signup_illustration.svg";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import logo from "../../assets/images/BudgetTracker.svg";
-import { RegistFormValidationSchema } from "../../utils/validation";
 import MailOutlineIcon from "@mui/icons-material/MailOutline";
-import { RegisterFormData } from "../../utils/interfaces";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+
 import { setUser } from "../../store/user/user.slice";
-import { useNavigate } from "react-router-dom";
-import api from "../../api/api";
-import { toast } from "react-toastify";
+import { signUpUser } from "../../services/api/expenses-api";
+import { RegisterFormData } from "../../utils/interfaces";
+import { RegistFormValidationSchema } from "../../utils/validation";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -38,29 +40,22 @@ const Register = () => {
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    const { firstName, lastName, email, password, budgetLimit } = data;
-
     try {
-      const response = await api.post("/budgets/signup", {
-        firstName,
-        lastName,
-        email,
-        password,
-        budgetLimit,
-      });
-
-      const responseData = response.data;
-      // alert("Signup successful! Token: " + responseData.token);  //Add Toasters
+      const responseData = await signUpUser(data);
 
       // Store user data in Redux
       dispatch(setUser(responseData.user));
 
-      toast.success("Signup Successful!  Please Login through this Login Page");
+      toast.success("Signup Successful! Please Login through this Login Page");
 
       // Redirect to login page
       navigate("/login");
     } catch (error) {
-      toast.error(error as string);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong! Please try again later."
+      );
     }
   };
   const handleClickShowPassword = () => {

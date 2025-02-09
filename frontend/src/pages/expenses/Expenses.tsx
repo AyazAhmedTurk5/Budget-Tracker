@@ -1,41 +1,65 @@
+import DatePicker from "react-datepicker";
 import { useCallback, useEffect, useState } from "react";
-import DeleteIcon from "../../assets/icons/delete-icon.svg";
-import EditIcon from "../../assets/icons/edit-icon.svg";
-import { FaSearch } from "react-icons/fa";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 import AddExpenseModal from "../../components/Modal/AddExpenseModal";
 import { Box } from "@mui/material";
+
+import { getCurrentDate } from "../../utils/utilities";
+import {
+  addExpenseApi,
+  deleteExpenseApi,
+  editExpenseApi,
+  fetchExpenses,
+} from "../../services/api/expenses-api";
+
 import Sidenav from "../sideNav/Sidenav";
 import Header from "../header/Header";
-import api from "../../api/api";
-import { ExpenseFormData } from "../../utils/interfaces";
-import { toast } from "react-toastify";
-import { useDispatch, useSelector } from "react-redux";
 import {
   addExpense,
   deleteExpense,
   editExpense,
 } from "../../store/expenses/expenses.slice";
 import { RootState } from "../../store/root-reducer";
-import { getCurrentDate } from "../../utils/validation";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { ExpenseFormData } from "../../utils/interfaces";
+import DeleteIcon from "../../assets/icons/delete-icon.svg";
+import EditIcon from "../../assets/icons/edit-icon.svg";
 import CloseIcon from "@mui/icons-material/Close";
+import { FaSearch } from "react-icons/fa";
 
 const Expenses = () => {
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const dispatch = useDispatch();
-  const [openAddExpenseModal, setOpenAddExpenseModal] =
-    useState<boolean>(false);
-  const [openEditExpenseModal, setOpenEditExpenseModal] =
-    useState<boolean>(false);
-  const [openDeleteExpenseModal, setOpenDeleteExpenseModal] =
-    useState<boolean>(false);
+
+  const [date, setDate] = useState<Date | null>(new Date(getCurrentDate()));
+  const [sortByFilter, setSortByFilter] = useState<string>("");
+  const [expensesData, setExpensesData] = useState<ExpenseFormData[]>(expenses);
+  const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false);
   const [selectedExpense, setSelectedExpense] = useState<ExpenseFormData>(
     {} as ExpenseFormData
   );
-
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [modalType, setModalType] = useState<"Add" | "Edit" | "Delete" | null>(
+    null
+  );
+
+  // Function to open modal
+  const openModal = (type: "Add" | "Edit" | "Delete") => {
+    setModalType(type);
+  };
+
+  // Function to close modal
+  const handleClose = () => {
+    setModalType(null);
+  };
+
+  const totalExpenditure = useCallback(() => {
+    let total = 0;
+    expensesData.map((expense) => (total += expense.price));
+    return total;
+  }, [expensesData]);
 
   useEffect(() => {
     const filterExpensesBySearchQuery = () => {
@@ -47,10 +71,6 @@ const Expenses = () => {
 
     setExpensesData(filterExpensesBySearchQuery());
   }, [searchQuery, expenses]);
-  const [date, setDate] = useState<Date | null>(new Date(getCurrentDate()));
-  const [sortByFilter, setSortByFilter] = useState<string>("");
-  const [expensesData, setExpensesData] = useState(expenses);
-  const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
   useEffect(() => {
     const filterExpensesByDate = () => {
@@ -64,6 +84,7 @@ const Expenses = () => {
 
     setExpensesData(filterExpensesByDate());
   }, [date, expenses]);
+
   useEffect(() => {
     const sortExpenses = () => {
       const sortedExpenses = [...expenses];
@@ -93,35 +114,15 @@ const Expenses = () => {
     setExpensesData(sortExpenses());
   }, [sortByFilter, expenses]);
 
-  const totalExpenditure = useCallback(() => {
-    let total = 0;
-    expensesData.map((expense) => (total += expense.price));
-    return total;
-  }, [expensesData]);
-
   useEffect(() => {
-    const fetchExpenses = async () => {
-      try {
-        const response = await api.get("/budgets");
-        const result = response.data;
-        if (result.expenses) {
-          dispatch(addExpense(result.expenses));
-        }
-      } catch (error) {
-        toast.error(error as string);
-      }
-    };
-    fetchExpenses();
+    fetchExpenses(dispatch);
   }, [dispatch]);
 
   const handleAdd = async (updatedExpense: ExpenseFormData) => {
     try {
-      const response = await api.post("/budgets/add-expense", updatedExpense);
-      const result = response.data;
-
+      const result = await addExpenseApi(updatedExpense);
       dispatch(addExpense(result.expense));
       toast.success("Expense added successfully!");
-
       handleClose();
     } catch (error) {
       toast.error(error as string);
@@ -129,38 +130,29 @@ const Expenses = () => {
   };
   const handleDelete = async (id: string) => {
     try {
-      const response = await api.delete(`/budgets/delete-expense/${id}`);
-      if (response) {
+      const result = await deleteExpenseApi(id);
+      if (result) {
         toast.success("Expense Deleted successfully!");
+        dispatch(deleteExpense(id));
+        handleClose();
       }
     } catch (error) {
       toast.error(error as string);
     }
-    dispatch(deleteExpense(id));
-    handleClose(); // Close the modal
   };
+
   const handleEdit = async (id: string, updatedExpense: ExpenseFormData) => {
     try {
-      const response = await api.patch(
-        `/budgets/edit-expense/${id}`,
-        updatedExpense
-      );
-      if (response) {
+      const result = await editExpenseApi(id, updatedExpense);
+      if (result) {
         toast.success("Expense Edited successfully!");
+        dispatch(editExpense({ id, updatedExpense }));
+        handleClose();
       }
     } catch (error) {
       toast.error(error as string);
     }
-    dispatch(editExpense({ id, updatedExpense }));
-    handleClose();
   };
-
-  const handleClose = () => {
-    setOpenAddExpenseModal(false);
-    setOpenEditExpenseModal(false);
-    setOpenDeleteExpenseModal(false);
-  };
-
   return (
     <Box sx={{ display: "flex " }}>
       <Sidenav />
@@ -173,7 +165,7 @@ const Expenses = () => {
               Expenses
             </h1>
             <button
-              onClick={() => setOpenAddExpenseModal(true)}
+              onClick={() => openModal("Add")}
               className="bg-[#7539FF] text-white px-4 py-2  mb-2 rounded-md"
             >
               Add Expenses
@@ -312,7 +304,7 @@ const Expenses = () => {
                         className="text-red-500"
                         onClick={() => {
                           setSelectedExpense(expense);
-                          setOpenDeleteExpenseModal(true);
+                          openModal("Delete");
                         }}
                       >
                         <img
@@ -325,7 +317,7 @@ const Expenses = () => {
                         className="text-blue-500"
                         onClick={() => {
                           setSelectedExpense(expense);
-                          setOpenEditExpenseModal(true);
+                          openModal("Edit");
                         }}
                       >
                         <img
@@ -361,31 +353,15 @@ const Expenses = () => {
           </div>
         </div>
 
-        {openAddExpenseModal && (
+        {modalType && (
           <AddExpenseModal
-            open={openAddExpenseModal}
+            open={!!modalType} // Ensures modal is open when modalType is not null
             handleClose={handleClose}
             selectedExpense={selectedExpense}
-            modalType="Add Expense"
-            handleAdd={handleAdd}
-          />
-        )}
-        {openDeleteExpenseModal && (
-          <AddExpenseModal
-            open={openDeleteExpenseModal}
-            handleClose={handleClose}
-            selectedExpense={selectedExpense}
-            modalType="Delete Expense"
-            handleDelete={handleDelete}
-          />
-        )}
-        {openEditExpenseModal && (
-          <AddExpenseModal
-            open={openEditExpenseModal}
-            handleClose={handleClose}
-            selectedExpense={selectedExpense}
-            modalType="Edit Expense"
-            handleEdit={handleEdit}
+            modalType={`${modalType} Expense`}
+            handleAdd={modalType === "Add" ? handleAdd : undefined}
+            handleEdit={modalType === "Edit" ? handleEdit : undefined}
+            handleDelete={modalType === "Delete" ? handleDelete : undefined}
           />
         )}
       </Box>

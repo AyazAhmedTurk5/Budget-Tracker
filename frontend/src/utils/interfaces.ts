@@ -52,3 +52,13 @@ export interface RegisterFormData {
   confirmPassword: string;
   budgetLimit: number;
 }
+
+export interface AddExpenseModalProps {
+  open: boolean;
+  modalType: string;
+  selectedExpense: ExpenseFormData;
+  handleClose: () => void;
+  handleAdd?: (expenseData: ExpenseFormData) => void;
+  handleEdit?: (id: string, updatedExpense: ExpenseFormData) => void;
+  handleDelete?: (id: string) => void;
+}

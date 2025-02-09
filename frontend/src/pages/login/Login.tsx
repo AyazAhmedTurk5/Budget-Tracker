@@ -1,29 +1,29 @@
-import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "react-toastify";
+
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm, Controller } from "react-hook-form";
+import { setLoggedIn, setUser } from "../../store/user/user.slice";
 
 import {
-  TextField,
   Button,
   Typography,
   Box,
   Checkbox,
   FormControlLabel,
-  IconButton,
   Divider,
 } from "@mui/material";
+
 import loginImage from "../../assets/images/loginImage.svg";
-import VisibilityIcon from "@mui/icons-material/Visibility";
-import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-import MailOutlineIcon from "@mui/icons-material/MailOutline";
 import logo from "../../assets/images/BudgetTracker.svg";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
-import { setLoggedIn, setUser } from "../../store/user/user.slice";
 import { LoginFormData } from "../../utils/interfaces";
 import { LoginFormValidationSchema } from "../../utils/validation";
-import api from "../../api/api";
-import { toast } from "react-toastify";
+import LoginFormInput from "./components/LoginFormInput";
+import SubmitButton from "./components/SubmitButton";
+import IllustrationSection from "./components/IllustrationSection";
+import { loginUser } from "../../services/api/expenses-api";
 
 const Login = () => {
   const {
@@ -34,9 +34,9 @@ const Login = () => {
     resolver: yupResolver(LoginFormValidationSchema),
   });
 
-  const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => {
     setShowPassword((prev) => !prev);
@@ -44,34 +44,26 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      const response = await api.post("/budgets/login", data);
-
-      const result = response.data;
-
-      dispatch(setUser(result.user)); // Set user state
-      dispatch(setLoggedIn(true)); // Set login state
-
+      const result = await loginUser(data);
+      dispatch(setUser(result.user));
+      dispatch(setLoggedIn(true));
       localStorage.setItem("token", result.token);
 
       toast.success("Login successful !!");
-
       navigate("/");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error("Wrong user name or password. Please try again!", {
-          style: { backgroundColor: "#FDE2E2", color: "#D32F2F" }, 
-        });
-      } else {
-        toast.error("Something went Wrong!", {
-          style: { backgroundColor: "#FDE2E2", color: "#D32F2F" }, 
-        });
-      }
+      toast.error(
+        error instanceof Error
+          ? "Wrong username or password. Please try again!"
+          : "Something went wrong!",
+        {
+          style: { backgroundColor: "#FDE2E2", color: "#D32F2F" },
+        }
+      );
     }
   };
-
   return (
     <div className="layout">
-      {/* Logo */}
       <img src={logo} alt="Logo" style={{ width: "300px", height: "50px" }} />
 
       <Box
@@ -116,84 +108,26 @@ const Login = () => {
 
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Email */}
-            <div className="mb-2">
-              <label
-                htmlFor="password"
-                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
-              >
-                Email
-              </label>
-
-              <Controller
-                name="email"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    variant="outlined"
-                    type="email"
-                    placeholder="Test@gmail.com"
-                    error={!!errors.email}
-                    helperText={errors.email?.message}
-                    sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          aria-label="message icon"
-                          className="!text-[#98A2B3]"
-                          edge="end"
-                        >
-                          <MailOutlineIcon />
-                        </IconButton>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </div>
+            <LoginFormInput
+              name="email"
+              control={control}
+              errors={errors}
+              type="email"
+              placeholder="Email"
+              showPassword={showPassword}
+              handleClickShowPassword={handleClickShowPassword}
+            />
 
             {/* Password */}
-            <div className="mb-2">
-              <label
-                htmlFor="password"
-                className="block text-[#2B2B2B] text-[14px] leading-6 font-normal mb-1"
-              >
-                Password
-              </label>
-              <Controller
-                name="password"
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    fullWidth
-                    variant="outlined"
-                    placeholder="Enter your password"
-                    type={showPassword ? "text" : "password"}
-                    error={!!errors.password}
-                    helperText={errors.password?.message}
-                    sx={{ mb: 2, backgroundColor: "#EFF4FB" }}
-                    InputProps={{
-                      endAdornment: (
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={handleClickShowPassword}
-                          className="!text-[#98A2B3]"
-                          edge="end"
-                        >
-                          {showPassword ? (
-                            <VisibilityOffIcon />
-                          ) : (
-                            <VisibilityIcon />
-                          )}
-                        </IconButton>
-                      ),
-                    }}
-                  />
-                )}
-              />
-            </div>
+            <LoginFormInput
+              name="password"
+              control={control}
+              errors={errors}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              showPassword={showPassword}
+              handleClickShowPassword={handleClickShowPassword}
+            />
 
             {/* Remember Me */}
             <Box
@@ -216,31 +150,14 @@ const Login = () => {
                 )}
               />
               <Typography
-                sx={{
-                  fontSize: "14px",
-                  color: "#6C63FF",
-                  cursor: "pointer",
-                }}
+                sx={{ fontSize: "14px", color: "#6C63FF", cursor: "pointer" }}
               >
                 Forgot Password?
               </Typography>
             </Box>
 
             {/* Submit Button */}
-            <Button
-              type="submit"
-              variant="contained"
-              fullWidth
-              sx={{
-                backgroundColor: "#7539FF",
-                color: "#fff",
-                padding: "10px",
-                fontWeight: "bold",
-                "&:hover": { backgroundColor: "#5a54d2" },
-              }}
-            >
-              Log In
-            </Button>
+            <SubmitButton label="Log In" />
           </form>
 
           <Typography variant="body2" sx={{ textAlign: "center", mt: 2 }}>
@@ -259,22 +176,7 @@ const Login = () => {
         <Divider orientation="vertical" variant="middle" flexItem />
 
         {/* Illustration Section */}
-        <Box
-          sx={{
-            display: { xs: "none", md: "flex" },
-            alignItems: "center",
-            justifyContent: "center",
-            width: "50%",
-            height: "100%",
-            paddingRight: "5px",
-          }}
-        >
-          <img
-            src={loginImage}
-            alt="Login Illustration"
-            style={{ maxWidth: "80%", height: "auto" }}
-          />
-        </Box>
+        <IllustrationSection imgSrc={loginImage} />
       </Box>
     </div>
   );
