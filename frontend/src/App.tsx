@@ -2,7 +2,7 @@ import UserProfile from "./pages/user-profile/UserProfile";
 import { createTheme, ThemeProvider } from "@mui/material";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import Login from "./pages/login/Login";
-import Register from "./pages/register/Register";
+import Register from "./pages/register/register";
 import Expenses from "./pages/expenses/Expenses";
 import { useSelector } from "react-redux";
 import { RootState } from "./store/root-reducer";
@@ -44,7 +44,11 @@ const App = () => {
         ) : null}
       </Routes>
       <ToastContainer
-      toastStyle={{ backgroundColor: "#E1F3EC", color: "#08B461", border:"1px solid #08B461 " }}
+        toastStyle={{
+          backgroundColor: "#E1F3EC",
+          color: "#08B461",
+          border: "1px solid #08B461 ",
+        }}
         autoClose={3000}
         hideProgressBar={true}
         newestOnTop={true}
