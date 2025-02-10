@@ -35,6 +35,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import { FaSearch } from "react-icons/fa";
 
 const Expenses = () => {
+  const ItemsPerPage = 7;
   const expenses = useSelector((state: RootState) => state.expenses.expenses);
   const dispatch = useDispatch();
 
@@ -45,17 +46,26 @@ const Expenses = () => {
   const [selectedExpense, setSelectedExpense] = useState<ExpenseFormData>(
     {} as ExpenseFormData
   );
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [modalType, setModalType] = useState<"Add" | "Edit" | "Delete" | null>(
     null
   );
+  const totalPages = Math.ceil(expensesData.length / ItemsPerPage);
 
-  // Function to open modal
+  const currentPageData = expensesData.slice(
+    (currentPage - 1) * ItemsPerPage,
+    currentPage * ItemsPerPage
+  );
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   const openModal = (type: "Add" | "Edit" | "Delete") => {
     setModalType(type);
   };
 
-  // Function to close modal
   const handleClose = () => {
     setModalType(null);
   };
@@ -284,7 +294,7 @@ const Expenses = () => {
                 </tr>
               </thead>
               <tbody>
-                {expensesData.map((expense) => (
+                {currentPageData.map((expense) => (
                   <tr key={expense._id} className="border-b hover:bg-gray-50">
                     <td className="p-4 heading">{expense.title}</td>
                     <td className="p-4">
@@ -347,7 +357,7 @@ const Expenses = () => {
               </tbody>
             </table>
 
-            {expensesData.length >= 1 ? (
+            {/* {expensesData.length >= 1 ? (
               <div className="p-4 flex justify-between items-center border-t bg-gray-50">
                 <span className="text-sm text-gray-600">Showing 7 / 235</span>
                 <div className="flex space-x-2">
@@ -362,6 +372,48 @@ const Expenses = () => {
               </div>
             ) : (
               <div className="p-4 flex justify-center  items-center border-t bg-gray-50">
+                <span className="text-sm text-gray-600">No Expenses found</span>
+              </div>
+            )} */}
+            {expensesData.length >= 1 && (
+              <div className="p-4 flex justify-between items-center border-t bg-gray-50">
+                <span className="text-sm text-gray-600">
+                  Showing {currentPage * ItemsPerPage - ItemsPerPage + 1} /{" "}
+                  {expensesData.length}
+                </span>
+                <div className="flex space-x-2">
+                  {/* Pagination buttons */}
+                  {Array.from({ length: totalPages }, (_, index) => (
+                    <button
+                      key={index}
+                      className={`px-3 py-1 rounded ${
+                        currentPage === index + 1
+                          ? "bg-[#7539FF] text-white"
+                          : "bg-gray-200"
+                      }`}
+                      onClick={() => handlePageChange(index + 1)}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                  {totalPages > 5 && currentPage < totalPages - 1 && (
+                    <>
+                      <span className="px-3 py-1">...</span>
+                      <button
+                        className="px-3 py-1 rounded bg-gray-200"
+                        onClick={() => handlePageChange(totalPages)}
+                      >
+                        {totalPages}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* If no data, show message */}
+            {expensesData.length === 0 && (
+              <div className="p-4 flex justify-center items-center border-t bg-gray-50">
                 <span className="text-sm text-gray-600">No Expenses found</span>
               </div>
             )}
