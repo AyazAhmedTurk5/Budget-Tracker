@@ -5,7 +5,12 @@ import { toast } from "react-toastify";
 import AddExpenseModal from "../../components/Modal/AddExpenseModal";
 import { Box } from "@mui/material";
 
-import { getCurrentDate } from "../../utils/utilities";
+import {
+  formatDate,
+  formatDateToDisplay,
+  getCurrentDate,
+  parseDate,
+} from "../../utils/utilities";
 import {
   addExpenseApi,
   deleteExpenseApi,
@@ -75,16 +80,22 @@ const Expenses = () => {
   useEffect(() => {
     const filterExpensesByDate = () => {
       if (!date) return expenses;
-      return expenses.filter(
-        (expense) =>
-          new Date(expense.date).setHours(0, 0, 0, 0) ===
-          date.setHours(0, 0, 0, 0)
-      );
+
+      const formattedDate = formatDate(date);
+
+      const parsedDate = parseDate(formattedDate ?? "");
+
+      return expenses.filter((expense) => {
+        const expenseDate = parseDate(expense.date);
+
+        return expenseDate && parsedDate
+          ? expenseDate.setHours(0, 0, 0, 0) === parsedDate.setHours(0, 0, 0, 0)
+          : false;
+      });
     };
 
     setExpensesData(filterExpensesByDate());
   }, [date, expenses]);
-
   useEffect(() => {
     const sortExpenses = () => {
       const sortedExpenses = [...expenses];
@@ -96,14 +107,20 @@ const Expenses = () => {
           sortedExpenses.sort((a, b) => a.price - b.price);
           break;
         case "newest":
-          sortedExpenses.sort(
-            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
+          sortedExpenses.sort((a, b) => {
+            const dateA = parseDate(a.date);
+            const dateB = parseDate(b.date);
+            if (!dateA || !dateB) return 0;
+            return dateB.getTime() - dateA.getTime();
+          });
           break;
         case "oldest":
-          sortedExpenses.sort(
-            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-          );
+          sortedExpenses.sort((a, b) => {
+            const dateA = parseDate(a.date);
+            const dateB = parseDate(b.date);
+            if (!dateA || !dateB) return 0;
+            return dateA.getTime() - dateB.getTime();
+          });
           break;
         default:
           break;
@@ -295,9 +312,7 @@ const Expenses = () => {
                       {expense.price.toLocaleString()}
                     </td>
                     <td className="p-4 heading">
-                      {new Date(expense.date)
-                        .toLocaleDateString("en-GB")
-                        .replace(/\//g, "-")}
+                      {formatDateToDisplay(expense.date)}
                     </td>
                     <td className="p-4 flex justify-center space-x-4">
                       <button

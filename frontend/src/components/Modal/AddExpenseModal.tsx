@@ -15,7 +15,7 @@ import { AddExpenseModalProps } from "../../utils/interfaces";
 
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { formatDate } from "../../utils/utilities";
+import { parseDate } from "../../utils/utilities";
 
 const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   open,
@@ -32,10 +32,8 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   const [price, setPrice] = useState(
     modalType !== "Add Expense" ? selectedExpense.price.toString() ?? "" : ""
   );
-  const [date, setDate] = useState<string | null>(
-    modalType !== "Add Expense"
-      ? formatDate(new Date(selectedExpense.date))
-      : null
+  const [date, setDate] = useState<Date | null>(
+    modalType !== "Add Expense" ? parseDate(selectedExpense.date) : null
   );
 
   const handleModalAction = () => {
@@ -61,7 +59,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
   };
 
   const handleDateChange = (selectedDate: Date | null) => {
-    setDate(formatDate(selectedDate));
+    setDate(selectedDate);
   };
   // Reusable function to render a field
   const renderField = (
@@ -102,7 +100,7 @@ const AddExpenseModal: React.FC<AddExpenseModalProps> = ({
         </Typography>
       ) : (
         <DatePicker
-          selected={date ? new Date(date.split("-").reverse().join("-")) : null}
+          selected={date}
           placeholderText="Select Date"
           onChange={handleDateChange}
           dateFormat="dd-MM-yyyy"

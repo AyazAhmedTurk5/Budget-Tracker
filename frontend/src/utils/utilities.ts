@@ -13,3 +13,23 @@ export const formatDate = (date: Date | null): string | null => {
   const year = date.getFullYear();
   return `${day}-${month}-${year}`;
 };
+
+export const formatDateToDisplay = (dateString: string): string => {
+  const [day, month, year] = dateString.split("-").map(Number);
+
+  if (!day || !month || !year) return "Invalid Date";
+
+  const validDate = new Date(year, month - 1, day);
+
+  return validDate.toLocaleDateString("en-GB").replace(/\//g, "-");
+};
+
+export const parseDate = (dateString: string): Date | null => {
+  const [day, month, year] = dateString.split("-").map(Number);
+
+  if (!day || !month || !year) return null;
+
+  const validDate = new Date(year, month - 1, day);
+
+  return validDate;
+};
