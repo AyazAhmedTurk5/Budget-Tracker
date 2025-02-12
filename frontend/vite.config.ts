@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "frontend/dist", // Ensure this matches the distDir in vercel.json
-    chunkSizeWarningLimit: 1000, // Optional, for the chunk size warning
+    // chunkSizeWarningLimit: 1000, // Optional, for the chunk size warning
   },
 });
