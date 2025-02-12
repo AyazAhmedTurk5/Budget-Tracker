@@ -9,7 +9,11 @@ const app = express();
 
 app.use(
   cors({
-    origin: "*",
+    origin: [
+      " https://budget-tracker-frontend-rbx9nx3iy-ayaz-ahmeds-projects-8adb8a57.vercel.app",
+    ], // Replace with your actual frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"], // Allow necessary methods
+    credentials: true, // If using cookies or authentication
   })
 );
 
