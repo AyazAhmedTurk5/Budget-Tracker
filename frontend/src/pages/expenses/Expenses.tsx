@@ -278,7 +278,7 @@ const Expenses = () => {
             </div>
 
             <table className="min-w-full table-auto">
-              <thead className="">
+              <thead>
                 <tr>
                   <th className="text-left p-4 !font-[600] heading">Expense</th>
                   <th className="text-left p-4 !font-[600] heading">
